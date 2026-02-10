@@ -2,24 +2,25 @@
 using System.Xml.Linq;
 using OfficeOpenXml;
 using System.Diagnostics;
+using System.Linq;
 
-// Sökvägar
+// ===== SÖKVÄGAR =====
 string zipPath = @"C:\Users\Lenovo\DEV\ZipTest\2025-12-18 (1) (1).zip";
-string excelPath = @"C:\Users\Lenovo\DEV\ZipTest\mets.xlsx";
+string templatePath = @"C:\Users\Lenovo\Downloads\mall_webb_2026.xlsx";
+string excelPath = @"C:\Users\Lenovo\DEV\ZipTest\resultat.xlsx";
 
-// EPPlus licens (för privat/icke-kommersiell användning)
+// ===== EPPLUS LICENS =====
 ExcelPackage.License.SetNonCommercialPersonal("Lenovo User");
 
-// 1. Läs sip.xml ur zip
+// ===== 1. LÄS sip.xml =====
 XDocument xmlDoc;
 
 using (ZipArchive archive = ZipFile.OpenRead(zipPath))
 {
     var xmlEntry = archive.GetEntry("sip.xml");
-
     if (xmlEntry == null)
     {
-        Console.WriteLine("Kunde inte hitta sip.xml i zip-filen.");
+        Console.WriteLine("sip.xml saknas i zippen.");
         return;
     }
 
@@ -27,27 +28,47 @@ using (ZipArchive archive = ZipFile.OpenRead(zipPath))
     xmlDoc = XDocument.Load(stream);
 }
 
-// 2. Skapa Excel
-using var package = new ExcelPackage();
-var sheet = package.Workbook.Worksheets.Add("XML-data");
+// ===== 2. HÄMTA VIKTIG METADATA =====
+string GetValue(string name) =>
+    xmlDoc.Descendants().FirstOrDefault(e => e.Name.LocalName == name)?.Value ?? "";
 
-// 3. Skriv alla XML-element till Excel
-int row = 1;
+// Fält från sip.xml
+string title = GetValue("title");
+string dateIssued = GetValue("dateIssued");
+string identifier = GetValue("identifier");
+string url = GetValue("url");
+string systemName = GetValue("name");
 
-foreach (var element in xmlDoc.Descendants())
+// ===== 3. ÖPPNA EXCEL-MALL =====
+using var package = new ExcelPackage(new FileInfo(templatePath));
+var sheet = package.Workbook.Worksheets.First();
+
+// ===== 4. SKRIV TILL RÄTT RADER =====
+void SetValue(string rubric, string value)
 {
-    sheet.Cells[row, 1].Value = element.Name.LocalName;
-    sheet.Cells[row, 2].Value = element.Value;
-    row++;
+    var row = sheet.Cells
+        .Where(c => c.Start.Column == 1 && c.Text == rubric)
+        .Select(c => c.Start.Row)
+        .FirstOrDefault();
+
+    if (row > 0)
+        sheet.Cells[row, 2].Value = value;
 }
 
-// 4. Spara Excel-filen
+// Mappning
+SetValue("Beskrivning av leveransen", title);
+SetValue("Uttagsdatum", dateIssued);
+SetValue("Accessions-ID", identifier);
+SetValue("Kommentar", url);
+SetValue("Systemets namn", systemName);
+
+// ===== 5. SPARA =====
 package.SaveAs(new FileInfo(excelPath));
 
-Console.WriteLine("Klart! Excel skapad:");
+Console.WriteLine("Excel skapad:");
 Console.WriteLine(excelPath);
 
-// 5. Öppna Excel-filen automatiskt
+// ===== 6. ÖPPNA EXCEL =====
 Process.Start(new ProcessStartInfo
 {
     FileName = excelPath,
