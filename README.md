@@ -1,13 +1,3 @@
-# DATAHANTERING:
-
-JSON fil 
-
-Sitemap = kan hämta information från?
-
-Sip -> zip -> zip
-
-NuGet för att omvandla sip/mets till excelark
-
 # MUST HAVE:
 
 Excelark med information (FLIK 1 OCH FLIK 2)
@@ -292,3 +282,9 @@ med Riksarkivets krav, se RA-FS 2009:2, 3 kap. Tekniska krav
 Kan gå att arkivera otillåtna filer fast det kräver särskilt godkännande från riksarkivet (ORELEVANT?)
 
 Metadata = information om datan
+
+Sitemap = kan hämta information från (skapas av conserver)
+
+Sip -> zip -> zip
+
+NuGet för att omvandla sip/mets till excelark
