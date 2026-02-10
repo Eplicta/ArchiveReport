@@ -24,9 +24,9 @@ using (ZipArchive archive = ZipFile.OpenRead(zipPath))
         return;
     }
 
-    using var stream = xmlEntry.Open();
-    xmlDoc = XDocument.Load(stream);
-}
+            using var stream = xmlEntry.Open();
+            xmlDoc = XDocument.Load(stream);
+        }
 
 // ===== 2. HÄMTA VIKTIG METADATA =====
 string GetValue(string name) =>
