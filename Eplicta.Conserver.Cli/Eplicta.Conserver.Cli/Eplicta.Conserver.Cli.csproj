@@ -17,4 +17,9 @@
 		</None>
 	</ItemGroup>
 
+	<ItemGroup>
+		<EmbeddedResource Include="Templates\mall_webb_2026.xlsx" />
+	</ItemGroup>
+
+
 </Project>

@@ -7,110 +7,91 @@ using System.Windows.Forms;
 using System.Xml.Linq;
 using OfficeOpenXml;
 
-namespace Eplicta.Conserver.Cli
+namespace Eplicta.Conserver.Cli;
+
+public class AppForm : Form
 {
-    public class AppForm : Form
+    public AppForm()
     {
-        public AppForm()
+        Text = "METS → Excel";
+        Width = 400;
+        Height = 200;
+        FormBorderStyle = FormBorderStyle.FixedSingle;
+        MaximizeBox = false;
+
+        var label = new Label
         {
-            Text = "METS → Excel";
-            Width = 400;
-            Height = 200;
-            FormBorderStyle = FormBorderStyle.FixedSingle;
-            MaximizeBox = false;
+            Text = "Dra in en METS-zip här",
+            Dock = DockStyle.Fill,
+            TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
+            Font = new System.Drawing.Font("Segoe UI", 12)
+        };
 
-            var label = new Label
-            {
-                Text = "Dra in en METS-zip här",
-                Dock = DockStyle.Fill,
-                TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
-                Font = new System.Drawing.Font("Segoe UI", 12)
-            };
+        Controls.Add(label);
 
-            Controls.Add(label);
+        AllowDrop = true;
+        DragEnter += OnDragEnter;
+        DragDrop += OnDragDrop;
 
-            AllowDrop = true;
-            DragEnter += OnDragEnter;
-            DragDrop += OnDragDrop;
+        ExcelPackage.License.SetNonCommercialPersonal("Lenovo User");
+    }
 
-            ExcelPackage.License.SetNonCommercialPersonal("Lenovo User");
-        }
+    private void OnDragEnter(object? sender, DragEventArgs e)
+    {
+        if (e.Data?.GetDataPresent(DataFormats.FileDrop) == true)
+            e.Effect = DragDropEffects.Copy;
+    }
 
-        private void OnDragEnter(object sender, DragEventArgs e)
+    private void OnDragDrop(object? sender, DragEventArgs e)
+    {
+        try
         {
-            if (e.Data != null && e.Data.GetDataPresent(DataFormats.FileDrop))
-                e.Effect = DragDropEffects.Copy;
-        }
+            var files = (string[])e.Data!.GetData(DataFormats.FileDrop)!;
+            string zipPath = files[0];
 
-        private void OnDragDrop(object sender, DragEventArgs e)
+            Run(zipPath);
+
+            MessageBox.Show("Klart! Excel skapad.", "Färdig");
+        }
+        catch (Exception ex)
         {
-            try
-            {
-                var files = (string[])e.Data!.GetData(DataFormats.FileDrop)!;
-                string zipPath = files[0];
-
-                Run(zipPath);
-
-                MessageBox.Show("Klart! Excel skapad.", "Success");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Fel");
-            }
+            MessageBox.Show(ex.Message, "Fel");
         }
+    }
 
-        private void Run(string zipPath)
+    private void Run(string zipPath)
+    {
+        // ===== Läs METS =====
+        var mets = MetsReader.Read(zipPath);
+
+        // ===== Ladda inbakad Excel-mall =====
+        var assembly = typeof(AppForm).Assembly;
+        using var templateStream =
+            assembly.GetManifestResourceStream("Eplicta.Conserver.Cli.Templates.mall_webb_2026.xlsx");
+
+        if (templateStream == null)
+            throw new Exception("Kunde inte hitta inbyggd Excel-mall.");
+
+        using var package = new ExcelPackage(templateStream);
+        var sheet = package.Workbook.Worksheets.FirstOrDefault()
+            ?? throw new Exception("Excel-mallen saknar blad.");
+
+        // ===== Skriv data till rätt celler =====
+        sheet.Cells["B2"].Value = mets.Title;
+        sheet.Cells["B3"].Value = mets.DateIssued;
+        sheet.Cells["B4"].Value = mets.Identifier;
+        sheet.Cells["B5"].Value = mets.SystemName;
+        sheet.Cells["B6"].Value = mets.Url;
+
+        // ===== Spara bredvid zip =====
+        string excelPath = Path.Combine(Path.GetDirectoryName(zipPath)!, "resultat.xlsx");
+        package.SaveAs(new FileInfo(excelPath));
+
+        // ===== Öppna Excel =====
+        Process.Start(new ProcessStartInfo
         {
-            string templatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "mall_webb_2026.xlsx");
-            string excelPath = Path.Combine(Path.GetDirectoryName(zipPath)!, "resultat.xlsx");
-
-            // ==== Läs XML ur zip ====
-            XDocument xmlDoc;
-
-            using (var archive = ZipFile.OpenRead(zipPath))
-            {
-                var entry = archive.Entries
-                    .FirstOrDefault(e => e.FullName.EndsWith(".xml", StringComparison.OrdinalIgnoreCase));
-
-                if (entry == null)
-                    throw new Exception("Ingen XML-fil hittades i zip.");
-
-                using var stream = entry.Open();
-                xmlDoc = XDocument.Load(stream);
-            }
-
-            // ==== Öppna Excel-mall ====
-            if (!File.Exists(templatePath))
-                throw new Exception("Excel-mallen hittades inte:\n" + templatePath);
-
-            using var package = new ExcelPackage(new FileInfo(templatePath));
-
-            var sheet = package.Workbook.Worksheets.FirstOrDefault();
-            if (sheet == null)
-                throw new Exception("Excel-mallen innehåller inget blad.");
-
-            // ==== Hämta XML-värden ====
-            var values = xmlDoc.Descendants()
-                .Select(e => e.Value?.Trim())
-                .Where(v => !string.IsNullOrWhiteSpace(v))
-                .Take(100)
-                .ToList();
-
-            if (values.Count == 0)
-                throw new Exception("Inga värden hittades i XML-filen.");
-
-            // ==== Skriv till Excel ====
-            for (int i = 0; i < values.Count; i++)
-                sheet.Cells[i + 2, 2].Value = values[i];
-
-            package.SaveAs(new FileInfo(excelPath));
-
-            // ==== Öppna resultat ====
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = excelPath,
-                UseShellExecute = true
-            });
-        }
+            FileName = excelPath,
+            UseShellExecute = true
+        });
     }
 }
