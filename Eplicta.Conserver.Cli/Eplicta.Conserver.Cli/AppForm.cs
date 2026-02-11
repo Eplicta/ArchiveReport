@@ -1,33 +1,50 @@
-﻿using System;
+﻿using OfficeOpenXml;
 using System.Diagnostics;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
 using System.Windows.Forms;
-using System.Xml.Linq;
-using OfficeOpenXml;
 
 namespace Eplicta.Conserver.Cli;
 
 public class AppForm : Form
 {
+    private readonly Label _statusLabel;
+    private readonly ProgressBar _progressBar;
+
     public AppForm()
     {
         Text = "METS → Excel";
-        Width = 400;
-        Height = 200;
+        Width = 420;
+        Height = 220;
         FormBorderStyle = FormBorderStyle.FixedSingle;
         MaximizeBox = false;
 
-        var label = new Label
+        var instruction = new Label
         {
-            Text = "Dra in en METS-zip här",
-            Dock = DockStyle.Fill,
+            Text = "Dra in en eller flera METS-zippar här",
+            Dock = DockStyle.Top,
+            Height = 60,
             TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
             Font = new System.Drawing.Font("Segoe UI", 12)
         };
 
-        Controls.Add(label);
+        _statusLabel = new Label
+        {
+            Text = "Väntar på fil…",
+            Dock = DockStyle.Top,
+            Height = 30,
+            TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        };
+
+        _progressBar = new ProgressBar
+        {
+            Dock = DockStyle.Top,
+            Height = 25,
+            Minimum = 0,
+            Maximum = 100
+        };
+
+        Controls.Add(_progressBar);
+        Controls.Add(_statusLabel);
+        Controls.Add(instruction);
 
         AllowDrop = true;
         DragEnter += OnDragEnter;
@@ -42,52 +59,54 @@ public class AppForm : Form
             e.Effect = DragDropEffects.Copy;
     }
 
-    private void OnDragDrop(object? sender, DragEventArgs e)
+    private async void OnDragDrop(object? sender, DragEventArgs e)
     {
         try
         {
             var files = (string[])e.Data!.GetData(DataFormats.FileDrop)!;
-            string zipPath = files[0];
+            var zipFiles = files.Where(f => f.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)).ToList();
 
-            Run(zipPath);
+            if (zipFiles.Count == 0)
+                throw new Exception("Ingen zip-fil hittades.");
 
-            MessageBox.Show("Klart! Excel skapad.", "Färdig");
+            _progressBar.Value = 0;
+            _progressBar.Maximum = zipFiles.Count;
+
+            for (int i = 0; i < zipFiles.Count; i++)
+            {
+                string zip = zipFiles[i];
+
+                _statusLabel.Text = $"Bearbetar: {Path.GetFileName(zip)}";
+
+                await Task.Run(() => Run(zip));
+
+                _progressBar.Value = i + 1;
+            }
+
+            _statusLabel.Text = "Klart!";
+            MessageBox.Show("Alla filer är behandlade.", "Färdig");
         }
         catch (Exception ex)
         {
+            _statusLabel.Text = "Fel uppstod";
             MessageBox.Show(ex.Message, "Fel");
         }
     }
 
     private void Run(string zipPath)
     {
-        // ===== Läs METS =====
-        var mets = MetsReader.Read(zipPath);
+        var values = MetsReader.Read(zipPath);
 
-        // ===== Ladda inbakad Excel-mall =====
-        var assembly = typeof(AppForm).Assembly;
-        using var templateStream =
-            assembly.GetManifestResourceStream("Eplicta.Conserver.Cli.Templates.mall_webb_2026.xlsx");
-
-        if (templateStream == null)
-            throw new Exception("Kunde inte hitta inbyggd Excel-mall.");
-
-        using var package = new ExcelPackage(templateStream);
-        var sheet = package.Workbook.Worksheets.FirstOrDefault()
-            ?? throw new Exception("Excel-mallen saknar blad.");
-
-        // ===== Skriv data till rätt celler =====
-        sheet.Cells["B2"].Value = mets.Title;
-        sheet.Cells["B3"].Value = mets.DateIssued;
-        sheet.Cells["B4"].Value = mets.Identifier;
-        sheet.Cells["B5"].Value = mets.SystemName;
-        sheet.Cells["B6"].Value = mets.Url;
-
-        // ===== Spara bredvid zip =====
         string excelPath = Path.Combine(Path.GetDirectoryName(zipPath)!, "resultat.xlsx");
+
+        using var package = new ExcelPackage();
+        var sheet = package.Workbook.Worksheets.Add("Data");
+
+        for (int i = 0; i < values.Count; i++)
+            sheet.Cells[i + 1, 1].Value = values[i];
+
         package.SaveAs(new FileInfo(excelPath));
 
-        // ===== Öppna Excel =====
         Process.Start(new ProcessStartInfo
         {
             FileName = excelPath,
