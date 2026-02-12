@@ -1,8 +1,10 @@
 # ANVÄNDARINSTRUKTIONER
 
-1. Dra och släpp eller klicka för att välja fil
-2. Ladda ned rapport
-3. Öppna rapporten
+Steg 1 = Dra och släpp eller klicka för att välja fil
+
+Steg 2 = Ladda ned rapport
+ 
+Steg 3 = Öppna rapporten
 
 # MUST HAVE:
 
