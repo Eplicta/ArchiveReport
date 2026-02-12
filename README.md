@@ -191,6 +191,7 @@ Kommentar = startsida för webbsidan
 Flik 3:
 
 ERROR vid otillåten filtyp (exempelfil.gif - Filtyp'gif' är inte godkänd enligt RA-FS 2009:2)
+
 ERROR om dubellt filnamn detekterat (case-insensitive: {filnamn})
 
 # TILLÅTNA FILFORMAT ENLIGT RA-FS 2009:2, 3 KAP. TEKNISKA KRAV
