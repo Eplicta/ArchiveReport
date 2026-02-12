@@ -190,7 +190,8 @@ Kommentar = startsida för webbsidan
 
 Flik 3:
 
-ERROR OM NÅGOT INTE KOM FRAM(???????)
+ERROR vid otillåten filtyp (exempelfil.gif - Filtyp'gif' är inte godkänd enligt RA-FS 2009:2)
+ERROR om dubellt filnamn detekterat (case-insensitive: {filnamn})
 
 # TILLÅTNA FILFORMAT ENLIGT RA-FS 2009:2, 3 KAP. TEKNISKA KRAV
 
@@ -288,3 +289,5 @@ Sitemap = kan hämta information från (skapas av conserver)
 Sip -> zip -> zip
 
 NuGet för att omvandla sip/mets till excelark
+
+Beslut har tagits om att köra på must/can have strukturen
