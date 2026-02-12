@@ -1,3 +1,9 @@
+# ANVÄNDARINSTRUKTIONER
+
+1. Dra och släpp eller klicka för att välja fil
+2. Ladda ned rapport
+3. Öppna rapporten
+
 # MUST HAVE:
 
 Excelark med information (FLIK 1 OCH FLIK 2)
