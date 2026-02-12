@@ -10,7 +10,7 @@ Steg 3 = Öppna rapporten
 
 Excelark med information (FLIK 1 OCH FLIK 2)
 
-Program som blockerar otillåtna filer???
+Program som blockerar otillåtna filer
 
 Beskrivning av leveransen (OBLIGATORISK)
 
