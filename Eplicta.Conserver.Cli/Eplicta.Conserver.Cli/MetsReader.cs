@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Xml.Linq;
@@ -11,6 +12,7 @@ public static class MetsReader
     {
         using var archive = ZipFile.OpenRead(zipPath);
 
+        // === Hitta sip.xml ===
         var entry = archive.Entries
             .FirstOrDefault(e => e.FullName.EndsWith("sip.xml", StringComparison.OrdinalIgnoreCase))
             ?? throw new Exception("Kunde inte hitta sip.xml i zip-filen.");
@@ -49,10 +51,28 @@ public static class MetsReader
             mets.System = Get(archivist, "note");
         }
 
+        // ============================================================
+        // NYTT: Extrahera webarchive + skanna filer
+        // ============================================================
+        try
+        {
+            var extractedRoot = FileScanner.ExtractNested(zipPath);
+            mets.Files = FileScanner.Scan(extractedRoot);
+        }
+        catch (Exception ex)
+        {
+            // Vi vill inte krascha hela körningen om filscanning misslyckas
+            mets.Kommentar += $" | Filskanning misslyckades: {ex.Message}";
+        }
+
         return mets;
     }
 
     // ================================================================
-    private static string Get(XElement parent, string local)
-        => parent.Descendants().FirstOrDefault(x => x.Name.LocalName == local)?.Value?.Trim() ?? "";
+    // Hjälpmetod för XML-värden
+    // ================================================================
+    private static string Get(XElement parent, string local) =>
+        parent.Descendants()
+              .FirstOrDefault(x => x.Name.LocalName == local)?
+              .Value.Trim() ?? "";
 }

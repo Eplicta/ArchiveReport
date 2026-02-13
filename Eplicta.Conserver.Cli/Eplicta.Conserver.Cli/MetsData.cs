@@ -2,6 +2,8 @@
 
 public class MetsData
 {
+    public List<FileEntry> Files { get; set; } = new();
+
     public string Beskrivning { get; set; } = "";
     public string Arkivbildare { get; set; } = "";
     public string OrganisationsnummerArkivbildare { get; set; } = "";
