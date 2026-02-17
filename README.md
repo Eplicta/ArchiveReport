@@ -1,10 +1,11 @@
 # ANVÄNDARINSTRUKTIONER
 
-Steg 1 = Dra och släpp eller klicka för att välja fil
+1. cd \Users\T408\source\repos\ArchiveReporte\Eplicta.Conserver.Cli\Eplicta.Conserver.Cli> (kan behövas gå in i eplicta.conserver 2x)
+2. dotnet build -c Release
+3. klicka enter, det ska stå build successful (inga problem om det står warning eller så, men det måste stå successful)
+4. dotnet run -c Release -- [sökväg till eran zip map]
 
-Steg 2 = Ladda ned rapport
- 
-Steg 3 = Öppna rapporten
+Det ska finnas en ny excel fil i era hämtade filer som heter resultat efter programmet körts korrekt 
 
 # MUST HAVE:
 
