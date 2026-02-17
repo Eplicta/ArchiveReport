@@ -78,55 +78,7 @@ Eplicta.Conserver.Cli/
 
 └── README.md
 
-# RAPPORTSTRUKTUR 1 (MUST HAVE)
-
-Flik 1:
-
-Riksarkivets diarienummer leveransöverenskommelse (LEVERERAS TOM. FYLLS I AV RIKSARKIVET)
-
-Riksarkivets diarienummer leverans (LEVERERAS TOM. FYLLS I AV RIKSARKIVET)
-
-Beskrivning av leveransen = Leverans avställning av extern webbsida 2025.
-
-Arkivbildare = Exempelmyndigheten
-
-Organisationsnummer arkivbildare = 123456-7890
-
-Levererande myndighet = Exempelverket
-
-Arkivets namn = Exempelmyndighetens arkiv
-
-Systemets namn = Exempelmyndighetens extern webbsida
-
-Kommentar = ..................................
-
-Projektkod (LEVERERAS TOM. FYLLS I AV RIKSARKIVET)
-
-Accessions-ID (LEVERERAS TOM. FYLLS I AV RIKSARKIVET)
-
-Batch-ID (LEVERERAS TOM. FYLLS I AV RIKSARKIVET)
-
---------------------------------------------------
-
-Flik 2:
-
-Filnamn = index.html
-
-Filtyp = html/xml/xsl/xsd/dtd/txt/png/jpg/tiff osv
-
-Filtypsversion = 1b
-
-Storlek = 12345
-
-Teckenuppsättning = UTF-8
-
-Speltid = 00:23:10
-
-Sökväg = root\bilder
-
-Sekretessgrad hos myndigheten = personsekretess
-
-# RAPPORTSTRUKTUR 2 (MUST HAVE + CAN HAVE)
+# RAPPORTSTRUKTUR
 
 Flik 1 (allmänt):
 
