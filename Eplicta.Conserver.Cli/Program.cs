@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Eplicta.Conserver.ArchiveReport;
 using OfficeOpenXml;
 
 namespace Eplicta.Conserver.Cli
@@ -26,6 +27,7 @@ namespace Eplicta.Conserver.Cli
                     continue;
                 }
 
+                //var stream = Renderer.GetStream(null);
                 Runner.Run(zipPath);
             }
 

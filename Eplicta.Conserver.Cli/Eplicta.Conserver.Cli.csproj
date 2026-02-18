@@ -21,5 +21,9 @@
 		<EmbeddedResource Include="Templates\mall_webb_2026.xlsx" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\Eplicta.Conserver.ArchiveReport\Eplicta.Conserver.ArchiveReport.csproj" />
+	</ItemGroup>
+
 
 </Project>
