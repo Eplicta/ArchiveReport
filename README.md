@@ -1,1 +1,253 @@
-# ArchiveReport
+# ANVÄNDARINSTRUKTIONER
+
+(1) cd \Users\T408\source\repos\ArchiveReporte\Eplicta.Conserver.Cli\Eplicta.Conserver.Cli> (kan behövas gå in i eplicta.conserver 2x)
+
+(2) dotnet build -c Release
+
+(3) klicka enter, det ska stå build successful (inga problem om det står warning eller så, men det måste stå successful)
+
+(4) dotnet run -c Release -- [sökväg till eran zip map]
+
+(5) Det ska finnas en ny excel fil i era hämtade filer som heter resultat efter programmet körts korrekt
+
+# MUST HAVE:
+
+Excelark med information (FLIK 1 OCH FLIK 2)
+
+Program som blockerar otillåtna filer
+
+Beskrivning av leveransen (OBLIGATORISK)
+
+Arkivbildare (OBLIGATORISK)
+
+Organisationsnummer arkivbildare (OBLIGATORISK)
+
+Levererande myndighet (OBLIGATORISK)
+
+Arkivets namn (OBLIGATORISK)
+
+Systemets namn (OBLIGATORISK)
+
+Filnamn (OBLIGATORISK)
+
+Filtyp (OBLIGATORISK)
+
+Filtypsversion (OBLIGATORISK)
+
+Storlek (OBLIGATORISK)
+
+Teckenuppsättning (OBLIGATORISK)
+
+Speltid (OBLIGATORISK FÖR VIDEOFILER OCH LJUDFILER)
+
+Sökväg (OBLIGATORISK)
+
+Sekretessgrad hos myndigheten (OBLIGATORISKT FÖR SEKRETESSBELAGDA UPPGIFTER)
+
+# CAN HAVE:
+
+Uttagsdatum (EJ OBLIGATORISK)
+
+Kontaktperson för e-fakturering (EJ OBLIGATORISK)
+
+Kostnadsställe (EJ OBLIGATORISK)
+
+E-post-adress till kontaktperson (EJ OBLIGATORISK)
+
+Telefonnummer till kontaktperson (EJ OBLIGATORISK)
+
+Kontaktperson för leverans (EJ OBLIGATORISK)
+
+Servicebyrå/konsult (EJ OBLIGATORISK)
+
+Organisationsnummer myndighet (EJ OBLIGATORISK)
+
+Behandling av personuppgifter (EJ OBLIGATORISK)
+
+Kommentar (EJ OBLIGATORISK)
+
+# FILSTRUKTUR:
+
+Eplicta.Conserver.Cli/
+
+├── Eplicta.Conserver.Cli.slnx
+
+├── Eplicta.Conserver.Cli/
+
+│ ├──── Eplicta.Conserver.Cli.csproj
+
+│ └──── Program.cs
+
+├── .gitignore
+
+└── README.md
+
+# RAPPORTSTRUKTUR
+
+Flik 1 (allmänt):
+
+Riksarkivets diarienummer leveransöverenskommelse = LEVERERAS TOM. (FYLLS I AV RIKSARKIVET)
+
+Riksarkivets diarienummer leverans = LEVERERAS TOM. (FYLLS I AV RIKSARKIVET)
+
+Beskrivning av leveransen = Leverans avställning av extern webbsida 2025.
+
+Arkivbildare = Exempelmyndigheten
+
+Organisationsnummer arkivbildare = 123456-7890
+
+Levererande myndighet = Exempelverket
+
+Organisationsnummer levererande myndighet = 123456-7890
+
+Servicebyrå/Konsult = ABC-data
+
+Kontaktperson för leverans = Carl XVI Gustaf (Kung)
+
+Telefonnummer till kontaktperson = 012-345678 (Arkivarie), 08-9876543 (Konsult)
+
+E-post-adress till kontaktperson = fornamn.efternamnsson@gmail.com
+
+Kostnadsställe = 1234567
+
+Kontaktperson för e-fakturering = Evelina Exempelsson (Ekonom)
+
+Arkivets namn = Exempelmyndighetens arkiv
+
+Systemets namn = Exempelmyndighetens extern webbsida
+
+Uttagsdatum = 2025-01-01
+
+Kommentar = ..................................
+
+Projektkod = LEVERERAS TOM. (FYLLS I AV RIKSARKIVET)
+
+Accessions-ID = LEVERERAS TOM. (FYLLS I AV RIKSARKIVET)
+
+Batch-ID = LEVERERAS TOM. (FYLLS I AV RIKSARKIVET)
+
+Flik 2:
+
+Filnamn = index.html
+
+Filtyp = html/xml/xsl/xsd/dtd/txt/png/jpg/tiff osv
+
+Filtypsversion = 1b
+
+Storlek = 12345
+
+Teckenuppsättning = UTF-8
+
+Speltid = 00:23:10
+
+Sökväg = root\bilder
+
+Sekretessgrad hos myndigheten = personsekretess
+
+Behandling av personuppgifter = Ja
+
+Kommentar = startsida för webbsidan
+
+Flik 3:
+
+ERROR vid otillåten filtyp (exempelfil.gif - Filtyp'gif' är inte godkänd enligt RA-FS 2009:2)
+
+ERROR om dubellt filnamn detekterat (case-insensitive: {filnamn})
+
+# TILLÅTNA FILFORMAT ENLIGT RA-FS 2009:2, 3 KAP. TEKNISKA KRAV
+
+html/htm
+
+xhtml
+
+xml
+
+css
+
+xsl
+
+xsd
+
+dtd
+
+JavaScript
+
+txt
+
+SGML
+
+Sekventiella filer med fast fält- och postlängd
+
+Sekventiella filer med teckenseparerade fält
+
+XML
+
+PDF/A-1 (ISO 19005-1:2005)
+
+JPEG/jpg
+
+TIFF
+
+PNG
+
+PDF/A-1 (för skannade bilder)
+
+WAVE
+
+WMA
+
+OggVorbis
+
+MP3
+
+WMV
+
+MPEG
+
+AVI
+
+GML (SS-ISO 19136:2007)
+
+PDF/E-1 (ISO 24517-1:2008)
+
+CALS Raster File Format (för rasterformat)
+
+Databas/register-format
+
+Strukturerade dokument (XML)
+
+Kontorsdokument (PDF/A-1)
+
+PKCS #7
+
+XML-signatures
+
+# ÖVRIG INFORMATION:
+
+ÅÅÅÅ-MM-DD
+
+Exempel på korrekt skrivning = 101344
+
+HEJ.TXT och hej.txt = samma
+
+Kontaktperson ska helst ha titel. Exempelvis Joar McFlurry (KONUNG)
+
+Gäller endast frysta webbplatser (EJ singlefile/WARC)
+
+Varje fil = en rad (index.html, script.js, style.css osv)
+
+Uppsala universitet, riksdagen mfl är beställare
+
+Godkända format för filer som bifogas leveransen ska levereras i enlighet med Riksarkivets krav, se RA-FS 2009:2, 3 kap. Tekniska krav
+
+Kan gå att arkivera otillåtna filer fast det kräver särskilt godkännande från riksarkivet (ORELEVANT?)
+
+Metadata = information om datan
+
+Sitemap = kan hämta information från (skapas av conserver)
+
+Sip -> zip -> zip
+
+NuGet för att omvandla sip/mets till excelark
+
+Beslut har tagits om att köra på must/can have strukturen
