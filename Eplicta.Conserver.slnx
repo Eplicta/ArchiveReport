@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/Eplicta.Conserver.ArchiveReport/">
+    <Project Path="Eplicta.Conserver.ArchiveReport/Eplicta.Conserver.ArchiveReport/Eplicta.Conserver.ArchiveReport.csproj" />
+  </Folder>
+  <Folder Name="/Eplicta.Conserver.Cli/">
+    <Project Path="Eplicta.Conserver.Cli/Eplicta.Conserver.Cli/Eplicta.Conserver.Cli.csproj" />
+  </Folder>
+</Solution>
