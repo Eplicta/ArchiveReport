@@ -7,10 +7,8 @@ namespace Eplicta.Conserver.Cli
 {
     public static class Runner
     {
-        public static Stream Run(string zipPath)
+        public static Stream Run(object mets)
         {
-            var mets = MetsReader.Read(zipPath);
-
             var assembly = Assembly.GetExecutingAssembly();
 
             var templateStream =
