@@ -7,13 +7,13 @@ namespace Eplicta.Conserver.Cli
 {
     public static class Runner
     {
-        public static Stream Run(object mets)
+        public static Stream Run(dynamic mets)
         {
             var assembly = Assembly.GetExecutingAssembly();
 
             var templateStream =
-                assembly.GetManifestResourceStream("Eplicta.Conserver.Cli.Templates.mall_webb_2026.xlsx")
-                ?? throw new Exception("Kunde inte hitta den inbäddade Excel-mallen.");
+                assembly.GetManifestResourceStream("Eplicta.Conserver.ArchiveReport.Templates.mall_webb_2026.xlsx")
+                ?? throw new Exception("Kunde inte hitta ddotnet add package EPPlus\r\nen inbäddade Excel-mallen.");
 
             var package = new ExcelPackage(templateStream);
 
@@ -69,7 +69,7 @@ namespace Eplicta.Conserver.Cli
             var memoryStream = new MemoryStream();
             package.SaveAs(memoryStream);
             memoryStream.Position = 0;
-            
+
             return memoryStream;
         }
     }
