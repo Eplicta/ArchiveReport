@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Eplicta.Conserver.Cli;
+namespace Eplicta.Conserver.ArchiveReport;
 
 public class FileEntry
 {

@@ -26,9 +26,10 @@ namespace Eplicta.Conserver.Cli
                     Console.WriteLine("File not found!");
                     continue;
                 }
-
-                //var stream = Renderer.GetStream(null);
-                Runner.Run(zipPath);
+                var mets = MetsReader.Read(zipPath);
+                var bytes = Renderer.GetBytes(mets);
+                System.IO.File.WriteAllBytes(zipPath + ".xlsx", bytes);
+                //Runner.Ru+n(zipPath);
             }
 
             Console.WriteLine("Done.");

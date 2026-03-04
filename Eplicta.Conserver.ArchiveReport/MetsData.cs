@@ -1,4 +1,4 @@
-﻿namespace Eplicta.Conserver.Cli;
+﻿namespace Eplicta.Conserver.ArchiveReport;
 
 public class MetsData
 {
