@@ -3,9 +3,12 @@ using System.IO;
 using System.Reflection;
 using OfficeOpenXml;
 
+//Använder stream istället för excel
+//Byt namn till runner.cs när den ska användas
+
 namespace Eplicta.Conserver.Cli
 {
-    public static class Runner
+    public static class Runner2stream
     {
         public static Stream Run(dynamic mets)
         {
