@@ -42,7 +42,7 @@ namespace Eplicta.Conserver.Cli
 
                 // Alternativ körning via Runner (just nu avstängd)
                 
-                //Runner.Run(zipPath);
+                Runner.Run(zipPath);
             }
 
             Console.WriteLine("Done.");

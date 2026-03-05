@@ -16,8 +16,17 @@ public static class MetsReader
             .FirstOrDefault(e => e.FullName.EndsWith("sip.xml", StringComparison.OrdinalIgnoreCase))
             ?? throw new Exception("Kunde inte hitta sip.xml i zip-filen.");
 
-        using var stream = entry.Open();
-        var doc = XDocument.Load(stream);
+        // Läs filen som bytes
+        byte[] xmlBytes;
+        using (var stream = entry.Open())
+        using (var ms = new MemoryStream())
+        {
+            stream.CopyTo(ms);
+            xmlBytes = ms.ToArray();
+        }
+
+        // Ladda XML från bytes
+        var doc = XDocument.Parse(System.Text.Encoding.UTF8.GetString(xmlBytes));
 
         var mets = new MetsData();
 
@@ -52,7 +61,6 @@ public static class MetsReader
         }
         catch (Exception ex)
         {
-            // Lägg till fel i kommentar istället för att stoppa programmet
             mets.Kommentar += $" | Filskanning misslyckades: {ex.Message}";
         }
 
