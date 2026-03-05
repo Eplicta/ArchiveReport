@@ -1,4 +1,5 @@
-﻿using Eplicta.Conserver.ArchiveReport;
+﻿#nullable enable
+using Eplicta.Conserver.ArchiveReport;
 using System.IO.Compression;
 using System.Xml.Linq;
 
@@ -45,7 +46,7 @@ public static class MetsReader
         var archivist = doc.Descendants()
             .FirstOrDefault(x =>
                 x.Name.LocalName == "agent" &&
-                (string?)x.Attribute("ROLE") == "ARCHIVIST");
+                (x.Attribute("ROLE")?.Value == "ARCHIVIST"));
 
         if (archivist != null)
         {
