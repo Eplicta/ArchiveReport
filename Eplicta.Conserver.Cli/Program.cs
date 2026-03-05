@@ -41,6 +41,7 @@ namespace Eplicta.Conserver.Cli
                 System.IO.File.WriteAllBytes(zipPath + ".xlsx", bytes);
 
                 // Alternativ körning via Runner (just nu avstängd)
+                
                 //Runner.Run(zipPath);
             }
 
