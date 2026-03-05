@@ -7,6 +7,7 @@ namespace Eplicta.Conserver.Cli
 {
     public static class Runner
     {
+        // Läser METS-metadata från ett ZIP-paket, fyller i en inbäddad Excel-mall och returnerar den ifyllda Excel-filen som en byte-array.
         public static byte[] Run(string zipPath)
         {
             var mets = MetsReader.Read(zipPath);
@@ -25,6 +26,7 @@ namespace Eplicta.Conserver.Cli
             var filerSheet = package.Workbook.Worksheets["Filer"]
                 ?? throw new Exception("Kunde inte hitta bladet 'Filer'.");
 
+            // Fyller i metadata på bladet "Allmänt" (B4–B21 = mallens layout)
             allmantSheet.Cells["B4"].Value = mets.Beskrivning;
             allmantSheet.Cells["B5"].Value = mets.Arkivbildare;
             allmantSheet.Cells["B6"].Value = mets.OrganisationsnummerArkivbildare;
@@ -50,11 +52,14 @@ namespace Eplicta.Conserver.Cli
 
                 foreach (var f in mets.Files)
                 {
+                    // Fyller i metadata på andra bladet
                     filerSheet.Cells[row, 1].Value = f.FileName;
                     filerSheet.Cells[row, 2].Value = f.FileType;
                     filerSheet.Cells[row, 3].Value = f.FileTypeVersion;
                     filerSheet.Cells[row, 4].Value = f.SizeBytes;
                     filerSheet.Cells[row, 5].Value = f.Charset;
+
+                    // Duration formateras som HH:MM:SS eller lämnas tomt om värdet saknas
                     filerSheet.Cells[row, 6].Value =
                         f.Duration.HasValue ? f.Duration.Value.ToString(@"hh\:mm\:ss") : "";
                     filerSheet.Cells[row, 7].Value = f.Path;
@@ -69,6 +74,7 @@ namespace Eplicta.Conserver.Cli
             return package.GetAsByteArray();
         }
 
+        // Sparar resultatet
         public static void RunAndSave(string zipPath)
         {
             var excelBytes = Run(zipPath);
