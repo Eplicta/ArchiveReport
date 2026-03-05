@@ -1,19 +1,17 @@
 ﻿using Eplicta.Conserver.ArchiveReport;
-using System;
-using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Xml.Linq;
 
 namespace Eplicta.Conserver.Cli;
 
 public static class MetsReader
 {
+    // Läser metadata från sip.xml i zip-filen
     public static MetsData Read(string zipPath)
     {
         using var archive = ZipFile.OpenRead(zipPath);
 
-        // === Hitta sip.xml ===
+        // Hitta sip.xml i arkivet
         var entry = archive.Entries
             .FirstOrDefault(e => e.FullName.EndsWith("sip.xml", StringComparison.OrdinalIgnoreCase))
             ?? throw new Exception("Kunde inte hitta sip.xml i zip-filen.");
@@ -23,9 +21,7 @@ public static class MetsReader
 
         var mets = new MetsData();
 
-        // ============================================================
-        // MODS (titel, id, datum, url)
-        // ============================================================
+        // Läs MODS-data (titel, id, datum, url)
         var mods = doc.Descendants().FirstOrDefault(x => x.Name.LocalName == "mods");
 
         if (mods != null)
@@ -33,14 +29,10 @@ public static class MetsReader
             mets.Systemnamn = Get(mods, "identifier");
             mets.Beskrivning = Get(mods, "title");
             mets.Uttagsdatum = Get(mods, "dateIssued");
-
-            // URL som kommentar
             mets.Kommentar = Get(mods, "url");
         }
 
-        // ============================================================
-        // METS header → arkivbildare / systeminfo
-        // ============================================================
+        // Läs METS header (arkivbildare och systeminfo)
         var archivist = doc.Descendants()
             .FirstOrDefault(x =>
                 x.Name.LocalName == "agent" &&
@@ -52,9 +44,7 @@ public static class MetsReader
             mets.System = Get(archivist, "note");
         }
 
-        // ============================================================
-        // NYTT: Extrahera webarchive + skanna filer
-        // ============================================================
+        // Extrahera webarchive och skanna filer
         try
         {
             var extractedRoot = FileScanner.ExtractNested(zipPath);
@@ -62,16 +52,14 @@ public static class MetsReader
         }
         catch (Exception ex)
         {
-            // Vi vill inte krascha hela körningen om filscanning misslyckas
+            // Lägg till fel i kommentar istället för att stoppa programmet
             mets.Kommentar += $" | Filskanning misslyckades: {ex.Message}";
         }
 
         return mets;
     }
 
-    // ================================================================
-    // Hjälpmetod för XML-värden
-    // ================================================================
+    // Hämtar värde från XML-element
     private static string Get(XElement parent, string local) =>
         parent.Descendants()
               .FirstOrDefault(x => x.Name.LocalName == local)?

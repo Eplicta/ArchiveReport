@@ -1,36 +1,35 @@
 ﻿using Eplicta.Conserver.ArchiveReport;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO.Compression;
-using System.Text;
 using TagLib;
 
 namespace Eplicta.Conserver.Cli;
 
 public static class FileScanner
 {
+    // Packar upp zip → hittar en inre zip → packar upp den också
     public static string ExtractNested(string zipPath)
     {
+        // Skapa temporär arbetsmapp
         var tempRoot = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         Directory.CreateDirectory(tempRoot);
 
-        // nivå 1
+        // Packa upp första zip
         var level1 = Path.Combine(tempRoot, "level1");
         ZipFile.ExtractToDirectory(zipPath, level1);
 
-        // hitta inre zip
+        // Hitta den inre zip-filen
         var innerZip = Directory.GetFiles(level1, "*.zip", SearchOption.AllDirectories)
                                 .FirstOrDefault()
                        ?? throw new Exception("Hittade ingen inre zip.");
 
-        // nivå 2
+        // Packa upp den inre zip-filen
         var level2 = Path.Combine(tempRoot, "level2");
         ZipFile.ExtractToDirectory(innerZip, level2);
 
         return level2;
     }
 
+    // Skannar alla filer i en mapp och skapar FileEntry-objekt
     public static List<FileEntry> Scan(string root)
     {
         var result = new List<FileEntry>();
@@ -47,7 +46,7 @@ public static class FileScanner
                 Path = file
             };
 
-            // audio/video duration
+            // Försök läsa duration för audio/video
             try
             {
                 using var tag = TagLib.File.Create(file);
@@ -59,9 +58,8 @@ public static class FileScanner
             }
             catch
             {
-                // ignorera filer som inte stöds av TagLib
+                // Ignorera filer som inte stöds
             }
-
 
             result.Add(entry);
         }

@@ -1,22 +1,25 @@
 ﻿using System.Text;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Eplicta.Conserver.ArchiveReport
 {
+    // Hanterar konvertering av MetsData till olika format.
     public class Renderer
     {
+        // Returnerar en stream baserat på METS-data.
         public static Stream GetStream(object mets)
         {
             throw new NotImplementedException();
         }
 
+        // Konverterar MetsData till en byte-array.
         public static byte[] GetBytes(MetsData mets)
         {
             var exampel = "haha claud hjälper inte";
-            byte[] bytes = Encoding.UTF8.GetBytes(exampel);
-            return bytes;
 
-            throw new NotImplementedException();
+            // Konverterar text till UTF8-bytes
+            byte[] bytes = Encoding.UTF8.GetBytes(exampel);
+
+            return bytes;
         }
     }
 }

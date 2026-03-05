@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using OfficeOpenXml;
@@ -10,23 +9,26 @@ namespace Eplicta.Conserver.Cli
     {
         public static void Run(string zipPath)
         {
+            // Läs METS-data från zip
             var mets = MetsReader.Read(zipPath);
 
             var assembly = Assembly.GetExecutingAssembly();
 
+            // Ladda inbäddad Excel-mall
             using var templateStream =
                 assembly.GetManifestResourceStream("Eplicta.Conserver.Cli.Templates.mall_webb_2026.xlsx")
                 ?? throw new Exception("Kunde inte hitta den inbäddade Excel-mallen.");
 
             using var package = new ExcelPackage(templateStream);
 
+            // Hämta Excel-blad
             var allmantSheet = package.Workbook.Worksheets["Allmänt"]
                ?? throw new Exception("Kunde inte hitta bladet 'Allmänt'.");
 
             var filerSheet = package.Workbook.Worksheets["Filer"]
                 ?? throw new Exception("Kunde inte hitta bladet 'Filer'.");
 
-            // ===== Metadata =====
+            // ===== Fyll metadata =====
             allmantSheet.Cells["B4"].Value = mets.Beskrivning;
             allmantSheet.Cells["B5"].Value = mets.Arkivbildare;
             allmantSheet.Cells["B6"].Value = mets.OrganisationsnummerArkivbildare;
@@ -46,7 +48,7 @@ namespace Eplicta.Conserver.Cli
             allmantSheet.Cells["B20"].Value = mets.AccessionsId;
             allmantSheet.Cells["B21"].Value = mets.BatchId;
 
-            // ===== File list =====
+            // ===== Fyll fil-lista =====
             if (mets.Files != null && mets.Files.Count > 0)
             {
                 int row = 2;
@@ -58,8 +60,11 @@ namespace Eplicta.Conserver.Cli
                     filerSheet.Cells[row, 3].Value = f.FileTypeVersion;
                     filerSheet.Cells[row, 4].Value = f.SizeBytes;
                     filerSheet.Cells[row, 5].Value = f.Charset;
+
+                    // Duration formaterad som tid
                     filerSheet.Cells[row, 6].Value =
                         f.Duration.HasValue ? f.Duration.Value.ToString(@"hh\:mm\:ss") : "";
+
                     filerSheet.Cells[row, 7].Value = f.Path;
                     filerSheet.Cells[row, 8].Value = f.Secrecy;
                     filerSheet.Cells[row, 9].Value = f.PersonalDataHandling;
@@ -69,10 +74,12 @@ namespace Eplicta.Conserver.Cli
                 }
             }
 
+            // Skapa sökväg till resultatfil
             string excelPath = Path.Combine(
                 Path.GetDirectoryName(zipPath)!,
                 Path.GetFileNameWithoutExtension(zipPath) + "_resultat.xlsx");
 
+            // Spara Excel-filen
             package.SaveAs(new FileInfo(excelPath));
 
             Console.WriteLine("Excel created:");
