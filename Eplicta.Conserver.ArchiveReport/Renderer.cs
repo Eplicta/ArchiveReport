@@ -5,12 +5,6 @@ namespace Eplicta.Conserver.ArchiveReport
     // Hanterar konvertering av MetsData till olika format.
     public class Renderer
     {
-        // Returnerar en stream baserat på METS-data.
-        public static Stream GetStream(object mets)
-        {
-            throw new NotImplementedException();
-        }
-
         // Konverterar MetsData till en byte-array.
         public static byte[] GetBytes(MetsData mets)
         {
