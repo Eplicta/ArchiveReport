@@ -39,10 +39,8 @@ namespace Eplicta.Conserver.Cli
 
                 // Spara Excel-fil
                 System.IO.File.WriteAllBytes(zipPath + ".xlsx", bytes);
-
-                // Alternativ körning via Runner (just nu avstängd)
                 
-                Runner.Run(zipPath);
+                //Runner.Run(zipPath);
             }
 
             Console.WriteLine("Done.");
