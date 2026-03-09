@@ -85,7 +85,7 @@ namespace Eplicta.Conserver.ArchiveReport
 
             string excelPath = Path.Combine(
                 Path.GetDirectoryName(zipPath)!,
-                Path.GetFileNameWithoutExtension(zipPath) + "_resultat.xe");
+                Path.GetFileNameWithoutExtension(zipPath) + ".exe");
 
             File.WriteAllBytes(excelPath, excelBytes);
 
