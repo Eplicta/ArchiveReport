@@ -19,31 +19,33 @@ namespace Eplicta.Conserver.Cli
                 return 1;
             }
 
-            // Loopa igenom alla zip-filer som skickats som argument
-            foreach (var zipPath in args)
-            {
-                Console.WriteLine("Processing: " + zipPath);
-
-                // Kontrollera att filen finns
-                if (!File.Exists(zipPath))
+            else {
+                // Loopa igenom alla zip-filer som skickats som argument
+                foreach (var zipPath in args)
                 {
-                    Console.WriteLine("File not found!");
-                    continue;
+                    Console.WriteLine("Processing: " + zipPath);
+
+                    // Kontrollera att filen finns
+                    if (!File.Exists(zipPath))
+                    {
+                        Console.WriteLine("File not found!");
+                        continue;
+                    }
+
+                    // Läs METS-data från zip
+                    var mets = MetsReader.Read(zipPath);
+
+                    // Generera Excel-data
+                    var bytes = Renderer.GetBytes(zipPath);
+
+                    // Spara Excel-fil
+                    System.IO.File.WriteAllBytes(zipPath + ".xlsx", bytes);
+
                 }
-
-                // Läs METS-data från zip
-                var mets = MetsReader.Read(zipPath);
-
-                // Generera Excel-data
-                var bytes = Renderer.GetBytes(zipPath);
-
-                // Spara Excel-fil
-                System.IO.File.WriteAllBytes(zipPath + ".xlsx", bytes);
-               
-            }
 
             Console.WriteLine("Done.");
             return 0;
+            }
         }
     }
 }

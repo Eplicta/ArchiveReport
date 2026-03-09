@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using Eplicta.Conserver.Cli;
 using OfficeOpenXml;
 
 namespace Eplicta.Conserver.ArchiveReport
@@ -86,7 +85,7 @@ namespace Eplicta.Conserver.ArchiveReport
 
             string excelPath = Path.Combine(
                 Path.GetDirectoryName(zipPath)!,
-                Path.GetFileNameWithoutExtension(zipPath) + "_resultat.xlsx");
+                Path.GetFileNameWithoutExtension(zipPath) + "_resultat.xe");
 
             File.WriteAllBytes(excelPath, excelBytes);
 

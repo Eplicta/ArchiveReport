@@ -1,8 +1,7 @@
 {
   "profiles": {
     "Eplicta.Conserver.Cli": {
-      "commandName": "Project",
-      "commandLineArgs": "C:\\Users\\Lenovo\\Downloads\\696dfb1ee45f9a76b81cf33b.zip"
+      "commandName": "Project"
     }
   }
 }
