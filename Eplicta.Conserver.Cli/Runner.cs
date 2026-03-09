@@ -66,6 +66,8 @@ namespace Eplicta.Conserver.Cli
                     filerSheet.Cells[row, 3].Value = f.FileTypeVersion;
                     filerSheet.Cells[row, 4].Value = f.SizeBytes;
                     filerSheet.Cells[row, 5].Value = f.Charset;
+
+                    // Duration formateras som HH:MM:SS eller lämnas tomt om värdet saknas
                     filerSheet.Cells[row, 6].Value =
                         f.Duration.HasValue ? f.Duration.Value.ToString(@"hh\:mm\:ss") : "";
                     filerSheet.Cells[row, 7].Value = f.Path;

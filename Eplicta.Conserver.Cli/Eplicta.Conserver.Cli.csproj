@@ -13,16 +13,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Update="Templates\mall_webb_2026.xlsx">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-	</ItemGroup>
-
-	<ItemGroup>
-		<EmbeddedResource Include="Templates\mall_webb_2026.xlsx" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <ProjectReference Include="..\Eplicta.Conserver.ArchiveReport\Eplicta.Conserver.ArchiveReport.csproj" />
 	</ItemGroup>
 

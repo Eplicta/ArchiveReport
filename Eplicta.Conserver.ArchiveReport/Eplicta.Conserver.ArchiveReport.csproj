@@ -6,7 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Templates\mall_webb_2026.xlsx" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Eplicta.Mets" Version="1.3.63" />
+    <PackageReference Include="EPPlus" Version="8.4.2" />
+    <PackageReference Include="taglib-sharp-netstandard2.0" Version="2.1.0" />
   </ItemGroup>
 
 </Project>
