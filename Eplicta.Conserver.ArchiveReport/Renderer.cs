@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using Eplicta.Conserver.Cli;
 using OfficeOpenXml;
 
 namespace Eplicta.Conserver.ArchiveReport
