@@ -2,7 +2,7 @@
 using System.IO.Compression;
 using TagLib;
 
-namespace Eplicta.Conserver.Cli;
+namespace Eplicta.Conserver.ArchiveReport;
 
 public static class FileScanner
 {
