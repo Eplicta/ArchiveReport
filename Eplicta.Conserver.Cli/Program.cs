@@ -35,12 +35,11 @@ namespace Eplicta.Conserver.Cli
                 var mets = MetsReader.Read(zipPath);
 
                 // Generera Excel-data
-                var bytes = Renderer.GetBytes(mets.ToString());
+                var bytes = Renderer.GetBytes(zipPath);
 
                 // Spara Excel-fil
                 System.IO.File.WriteAllBytes(zipPath + ".xlsx", bytes);
-                
-                //Runner.Run(zipPath);
+               
             }
 
             Console.WriteLine("Done.");

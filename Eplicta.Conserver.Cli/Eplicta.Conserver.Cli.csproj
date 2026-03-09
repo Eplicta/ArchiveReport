@@ -16,5 +16,11 @@
 	  <ProjectReference Include="..\Eplicta.Conserver.ArchiveReport\Eplicta.Conserver.ArchiveReport.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Update="2025-12-18 %281%29.zip">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
 
 </Project>
