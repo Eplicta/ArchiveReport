@@ -19,7 +19,6 @@ namespace Eplicta.Conserver.Cli
                 return 1;
             }
 
-            else {
                 // Loopa igenom alla zip-filer som skickats som argument
                 foreach (var zipPath in args)
                 {
@@ -48,4 +47,3 @@ namespace Eplicta.Conserver.Cli
             }
         }
     }
-}
