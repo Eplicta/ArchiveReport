@@ -1,14 +1,11 @@
 # ANVÄNDARINSTRUKTIONER
 
-(1) cd \Users\T408\source\repos\ArchiveReporte\Eplicta.Conserver.Cli\Eplicta.Conserver.Cli> (kan behövas gå in i eplicta.conserver 2x)
+1. cd \Users\T408\source\repos\ArchiveReporte\Eplicta.Conserver.Cli\Eplicta.Conserver.Cli> (kan behövas gå in i eplicta.conserver 2x)
+2. dotnet build -c Release
+3. klicka enter, det ska stå build successful (inga problem om det står warning eller så, men det måste stå successful)
+4. dotnet run -c Release -- [sökväg till eran zip map]
 
-(2) dotnet build -c Release
-
-(3) klicka enter, det ska stå build successful (inga problem om det står warning eller så, men det måste stå successful)
-
-(4) dotnet run -c Release -- [sökväg till eran zip map]
-
-(5) Det ska finnas en ny excel fil i era hämtade filer som heter resultat efter programmet körts korrekt
+Det ska finnas en ny excel fil i era hämtade filer som heter resultat efter programmet körts korrekt 
 
 # MUST HAVE:
 
@@ -42,7 +39,7 @@ Speltid (OBLIGATORISK FÖR VIDEOFILER OCH LJUDFILER)
 
 Sökväg (OBLIGATORISK)
 
-Sekretessgrad hos myndigheten (OBLIGATORISKT FÖR SEKRETESSBELAGDA UPPGIFTER)
+Sekretessgrad hos myndigheten (OBLIGATORISKT FÖR SEKRETESSBELAGDA UPPGIFTER) 
 
 # CAN HAVE:
 
@@ -74,25 +71,9 @@ Eplicta.Conserver.Cli/
 
 ├── Eplicta.Conserver.Cli/
 
-│ ├──── Eplicta.Conserver.Cli.csproj
+│      ├──── Eplicta.Conserver.Cli.csproj
 
-│ ├──── Program.cs
-
-│ ├──── Runner.cs
-
-│ ├──── MetsReader.cs
-
-│ └──── Templates/
-
-│        └──── mall_webb_2026.xlsx
-
-├── Eplicta.Conserver.ArchiveReport/
-
-│ ├──── Eplicta.Conserver.ArchiveReport.csproj
-
-│ ├──── Runner.cs
-
-│ └──── Renderer.cs
+│      └──── Program.cs
 
 ├── .gitignore
 
@@ -142,6 +123,8 @@ Accessions-ID = LEVERERAS TOM. (FYLLS I AV RIKSARKIVET)
 
 Batch-ID = LEVERERAS TOM. (FYLLS I AV RIKSARKIVET)
 
+--------------------------------------------------
+
 Flik 2:
 
 Filnamn = index.html
@@ -163,6 +146,8 @@ Sekretessgrad hos myndigheten = personsekretess
 Behandling av personuppgifter = Ja
 
 Kommentar = startsida för webbsidan
+
+--------------------------------------------------
 
 Flik 3:
 
@@ -244,7 +229,7 @@ XML-signatures
 
 Exempel på korrekt skrivning = 101344
 
-HEJ.TXT och hej.txt = samma
+HEJ.TXT och hej.txt = samma 
 
 Kontaktperson ska helst ha titel. Exempelvis Joar McFlurry (KONUNG)
 
@@ -254,7 +239,8 @@ Varje fil = en rad (index.html, script.js, style.css osv)
 
 Uppsala universitet, riksdagen mfl är beställare
 
-Godkända format för filer som bifogas leveransen ska levereras i enlighet med Riksarkivets krav, se RA-FS 2009:2, 3 kap. Tekniska krav
+Godkända format för filer som bifogas leveransen ska levereras i enlighet
+med Riksarkivets krav, se RA-FS 2009:2, 3 kap. Tekniska krav
 
 Kan gå att arkivera otillåtna filer fast det kräver särskilt godkännande från riksarkivet (ORELEVANT?)
 
