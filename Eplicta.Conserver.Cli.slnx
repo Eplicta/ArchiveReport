@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="Eplicta.Conserver.ArchiveReport/Eplicta.Conserver.ArchiveReport.csproj" Id="c634c18e-451f-46c1-8ee2-aff1ddb3bfcc" />
+  <Project Path="Eplicta.Conserver.Cli/Eplicta.Conserver.Cli.csproj" />
+</Solution>

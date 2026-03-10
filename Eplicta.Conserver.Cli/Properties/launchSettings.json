@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "Eplicta.Conserver.Cli": {
+      "commandName": "Project"
+    }
+  }
+}
