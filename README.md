@@ -1,4 +1,4 @@
-# ANVÄNDARINSTRUKTIONER
+# ANVÄNDARINSTRUKTIONER (outdated)
 
 1. cd \Users\T408\source\repos\ArchiveReporte\Eplicta.Conserver.Cli\Eplicta.Conserver.Cli> (kan behövas gå in i eplicta.conserver 2x)
 2. dotnet build -c Release
@@ -222,33 +222,6 @@ Kontorsdokument (PDF/A-1)
 PKCS #7
 
 XML-signatures
-
-# ÖVRIG INFORMATION:
-
-ÅÅÅÅ-MM-DD
-
-Exempel på korrekt skrivning = 101344
-
-HEJ.TXT och hej.txt = samma 
-
-Kontaktperson ska helst ha titel. Exempelvis Joar McFlurry (KONUNG)
-
-Gäller endast frysta webbplatser (EJ singlefile/WARC)
-
-Varje fil = en rad (index.html, script.js, style.css osv)
-
-Uppsala universitet, riksdagen mfl är beställare
-
-Godkända format för filer som bifogas leveransen ska levereras i enlighet
-med Riksarkivets krav, se RA-FS 2009:2, 3 kap. Tekniska krav
-
-Kan gå att arkivera otillåtna filer fast det kräver särskilt godkännande från riksarkivet (ORELEVANT?)
-
-Metadata = information om datan
-
-Sitemap = kan hämta information från (skapas av conserver)
-
-Sip -> zip -> zip
 
 NuGet för att omvandla sip/mets till excelark
 
