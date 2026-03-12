@@ -3,6 +3,15 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
+    <PackageId>$(MetsDataCompiler)</PackageId>
+    <Title>EplictaMetsPackager</Title>
+    <Authors>$(Malte Mohr, Max Rubbinson, Eylul Uzel)</Authors>
+    <Company>$(Eplicta)</Company>
+    <Description>Creates a excel file with meta data retrived from a package with a mets file inside</Description>
+    <PackageProjectUrl>https://github.com/Eplicta/ArchiveReport</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Eplicta/ArchiveReport</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
