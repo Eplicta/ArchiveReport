@@ -1,88 +1,92 @@
 ﻿#nullable enable
 using System.IO.Compression;
 using System.Xml.Linq;
-using System.Text;
 
 namespace Eplicta.Conserver.ArchiveReport;
 
 public static class MetsReader
 {
-    // Läser en zip-fil och extraherar metadata från sip.xml
+    /// Reads a zip archive and extracts metadata from sip.xml.
     public static MetsData Read(string zipPath)
     {
-        // Läser hela zip-filen som bytes
-        byte[] zipBytes = File.ReadAllBytes(zipPath);
+        using var archive = ZipFile.OpenRead(zipPath);
 
-        // Öppnar zip-arkivet i läsläge
-        using var archive = new ZipArchive(new MemoryStream(zipBytes), ZipArchiveMode.Read);
+        var sipEntry = FindSipXmlEntry(archive);
+        var document = LoadXmlDocument(sipEntry);
 
-        // Hittar filen sip.xml i zipen
-        var entry = archive.Entries
-            .FirstOrDefault(e => e.FullName.EndsWith("sip.xml", StringComparison.OrdinalIgnoreCase))
-            ?? throw new Exception("Kunde inte hitta sip.xml i zip-filen.");
-
-        byte[] xmlBytes;
-
-        // Läser innehållet i sip.xml till en byte-array
-        using (var entryStream = entry.Open())
-        using (var ms = new MemoryStream())
-        {
-            entryStream.CopyTo(ms);
-            xmlBytes = ms.ToArray();
-        }
-
-        // Parsar XML-innehållet
-        var doc = XDocument.Parse(Encoding.UTF8.GetString(xmlBytes));
-
-        // Skapar objektet som ska fyllas med data
         var mets = new MetsData();
 
-        // Letar efter mods-elementet i XML
-        var mods = doc.Descendants().FirstOrDefault(x => x.Name.LocalName == "mods");
+        ParseModsMetadata(document, mets);
+        ParseArchivistMetadata(document, mets);
+        ScanFiles(zipPath, mets);
 
-        if (mods != null)
-        {
-            // Hämtar metadata från mods
-            mets.Systemnamn = Get(mods, "identifier");
-            mets.Beskrivning = Get(mods, "title");
-            mets.Uttagsdatum = Get(mods, "dateIssued");
-            mets.Kommentar = Get(mods, "url");
-        }
+        return mets;
+    }
 
-        // Letar efter agent med rollen ARCHIVIST
+    /// Finds the sip.xml entry inside the zip archive.
+    private static ZipArchiveEntry FindSipXmlEntry(ZipArchive archive)
+    {
+        return archive.Entries
+            .FirstOrDefault(e => e.FullName.EndsWith("sip.xml", StringComparison.OrdinalIgnoreCase))
+            ?? throw new Exception("Could not find sip.xml in the zip archive.");
+    }
+
+    /// Loads the XML document from a zip entry.
+    private static XDocument LoadXmlDocument(ZipArchiveEntry entry)
+    {
+        using var stream = entry.Open();
+        return XDocument.Load(stream);
+    }
+
+    /// Extracts metadata from the MODS section.
+    private static void ParseModsMetadata(XDocument doc, MetsData mets)
+    {
+        var mods = doc.Descendants()
+            .FirstOrDefault(x => x.Name.LocalName == "mods");
+
+        if (mods == null)
+            return;
+
+        mets.Systemnamn = GetValue(mods, "identifier");
+        mets.Beskrivning = GetValue(mods, "title");
+        mets.Uttagsdatum = GetValue(mods, "dateIssued");
+        mets.Kommentar = GetValue(mods, "url");
+    }
+
+    /// Extracts metadata about the archivist/system.
+    private static void ParseArchivistMetadata(XDocument doc, MetsData mets)
+    {
         var archivist = doc.Descendants()
             .FirstOrDefault(x =>
                 x.Name.LocalName == "agent" &&
-                (x.Attribute("ROLE")?.Value == "ARCHIVIST"));
+                x.Attribute("ROLE")?.Value == "ARCHIVIST");
 
-        if (archivist != null)
-        {
-            // Hämtar information om arkivbildare och system
-            mets.Arkivbildare = Get(archivist, "name");
-            mets.System = Get(archivist, "note");
-        }
+        if (archivist == null)
+            return;
 
+        mets.Arkivbildare = GetValue(archivist, "name");
+        mets.System = GetValue(archivist, "note");
+    }
+
+    /// Scans files in the archive and attaches them to the MetsData object.
+    private static void ScanFiles(string zipPath, MetsData mets)
+    {
         try
         {
-            // Extraherar eventuella zip-filer inuti zipen
             var extractedRoot = FileScanner.ExtractNested(zipPath);
-
-            // Skannar filer och lägger till i MetsData
             mets.Files = FileScanner.Scan(extractedRoot);
         }
         catch (Exception ex)
         {
-            // Lägger till felmeddelande i kommentar om filskanning misslyckas
-            mets.Kommentar += $" | Filskanning misslyckades: {ex.Message}";
+            mets.Kommentar += $" | File scanning failed: {ex.Message}";
         }
-
-        // Returnerar det färdiga objektet
-        return mets;
     }
 
-    // Hjälpmetod för att hämta värdet från ett XML-element
-    private static string Get(XElement parent, string local) =>
-        parent.Descendants()
-              .FirstOrDefault(x => x.Name.LocalName == local)?
-              .Value.Trim() ?? "";
+    /// Retrieves the value of an XML element by local name.
+    private static string GetValue(XElement parent, string elementName)
+    {
+        return parent.Descendants()
+            .FirstOrDefault(x => x.Name.LocalName == elementName)?
+            .Value.Trim() ?? "";
+    }
 }
