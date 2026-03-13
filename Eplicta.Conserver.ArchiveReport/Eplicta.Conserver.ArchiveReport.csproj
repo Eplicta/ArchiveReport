@@ -1,9 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+
+		<PackageId>Eplicta.ArchiveReport</PackageId>
+		<Version>1.0.1</Version>
+
+		<Title>EplicaMetsPackage</Title>
+		<Authors>Malte Mohr, Max Robinson, Eylul Uzel</Authors>
+		<Company>Eplica</Company>
+
+		<Description>Creates an excel file with metadata retrieved from a package with a METS file inside</Description>
+
+		<PackageTags>METS excel metadata conserver</PackageTags>
+
+		<PackageProjectUrl>https://github.com/Eplica/ArchiveReport</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/Eplica/ArchiveReport</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
+		<PackageIconUrl>https://eplicta.se/wp-content/uploads/2016/07/cropped-Eplicta-logo-symbol-2.jpg</PackageIconUrl>
+		
+	</PropertyGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Templates\mall_webb_2026.xlsx" />
