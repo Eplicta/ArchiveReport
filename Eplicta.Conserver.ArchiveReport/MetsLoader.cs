@@ -4,10 +4,10 @@ using System.Xml.Linq;
 
 namespace Eplicta.Conserver.ArchiveReport;
 
-public static class MetsLoader
+public class MetsLoader
 {
     /// Reads a zip archive and extracts metadata from sip.xml.
-    public static ArchiveReport Read(string zipPath)
+    public ArchiveReport Read(string zipPath)
     {
         using var archive = ZipFile.OpenRead(zipPath);
 
@@ -24,7 +24,7 @@ public static class MetsLoader
     }
 
     /// Finds the sip.xml entry inside the zip archive.
-    private static ZipArchiveEntry FindSipXmlEntry(ZipArchive archive)
+    private ZipArchiveEntry FindSipXmlEntry(ZipArchive archive)
     {
         return archive.Entries
             .FirstOrDefault(e => e.FullName.EndsWith("sip.xml", StringComparison.OrdinalIgnoreCase))
@@ -32,14 +32,14 @@ public static class MetsLoader
     }
 
     /// Loads the XML document from a zip entry.
-    private static XDocument LoadXmlDocument(ZipArchiveEntry entry)
+    private XDocument LoadXmlDocument(ZipArchiveEntry entry)
     {
         using var stream = entry.Open();
         return XDocument.Load(stream);
     }
 
     /// Extracts metadata from the MODS section.
-    private static void ParseModsMetadata(XDocument doc, ArchiveReport mets)
+    private void ParseModsMetadata(XDocument doc, ArchiveReport mets)
     {
         var mods = doc.Descendants()
             .FirstOrDefault(x => x.Name.LocalName == "mods");
@@ -54,7 +54,7 @@ public static class MetsLoader
     }
 
     /// Extracts metadata about the archivist/system.
-    private static void ParseArchivistMetadata(XDocument doc, ArchiveReport mets)
+    private void ParseArchivistMetadata(XDocument doc, ArchiveReport mets)
     {
         var archivist = doc.Descendants()
             .FirstOrDefault(x =>
@@ -69,7 +69,7 @@ public static class MetsLoader
     }
 
     /// Scans files in the archive and attaches them to the MetsData object.
-    private static void ScanFiles(string zipPath, ArchiveReport mets)
+    private void ScanFiles(string zipPath, ArchiveReport mets)
     {
         try
         {
@@ -83,7 +83,7 @@ public static class MetsLoader
     }
 
     /// Retrieves the value of an XML element by local name.
-    private static string GetValue(XElement parent, string elementName)
+    private string GetValue(XElement parent, string elementName)
     {
         return parent.Descendants()
             .FirstOrDefault(x => x.Name.LocalName == elementName)?

@@ -12,7 +12,7 @@ namespace Eplicta.Conserver.ArchiveReport
         public byte[] GetBytes(string zipPath)
         {
             // Läs metadata från zip-filen
-            var mets = MetsLoader.Read(zipPath);
+            var mets = new MetsLoader().Read(zipPath);
 
             // Hämta assemblyn
             var assembly = Assembly.GetExecutingAssembly();
