@@ -31,23 +31,23 @@ namespace Eplicta.Conserver.ArchiveReport
             var filerSheet = package.Workbook.Worksheets["Filer"]
                 ?? throw new Exception("Kunde inte hitta bladet 'Filer'.");
 
-            // Fills in the metadata in the "Allmänt" sheet
-            allmantSheet.Cells["B4"].Value = mets.Beskrivning;
-            allmantSheet.Cells["B5"].Value = mets.Arkivbildare;
-            allmantSheet.Cells["B6"].Value = mets.OrganisationsnummerArkivbildare;
-            allmantSheet.Cells["B7"].Value = mets.LevererandeMyndighet;
-            allmantSheet.Cells["B8"].Value = mets.OrganisationsnummerLevererande;
+            // Fills in the metadata in the "Allmänt sheet
+            allmantSheet.Cells["B4"].Value = mets.Description;
+            allmantSheet.Cells["B5"].Value = mets.ArchiveBuilder;
+            allmantSheet.Cells["B6"].Value = mets.OrganizationNumberArchiveBuilder;
+            allmantSheet.Cells["B7"].Value = mets.DeliveringOrganization;
+            allmantSheet.Cells["B8"].Value = mets.DeliveringOrganizationNumber;
             allmantSheet.Cells["B9"].Value = mets.System;
-            allmantSheet.Cells["B10"].Value = mets.Kontaktperson;
-            allmantSheet.Cells["B11"].Value = mets.Telefon;
-            allmantSheet.Cells["B12"].Value = mets.Epost;
-            allmantSheet.Cells["B13"].Value = mets.Kostnadsstalle;
-            allmantSheet.Cells["B14"].Value = mets.FakturaKontakt;
-            allmantSheet.Cells["B15"].Value = mets.ArkivetsNamn;
-            allmantSheet.Cells["B16"].Value = mets.Systemnamn;
-            allmantSheet.Cells["B17"].Value = mets.Uttagsdatum;
-            allmantSheet.Cells["B18"].Value = mets.Kommentar;
-            allmantSheet.Cells["B19"].Value = mets.Projektkod;
+            allmantSheet.Cells["B10"].Value = mets.ContactPerson;
+            allmantSheet.Cells["B11"].Value = mets.Telephone;
+            allmantSheet.Cells["B12"].Value = mets.Email;
+            allmantSheet.Cells["B13"].Value = mets.CostPlace;
+            allmantSheet.Cells["B14"].Value = mets.InvoiceContact;
+            allmantSheet.Cells["B15"].Value = mets.ArchiveName;
+            allmantSheet.Cells["B16"].Value = mets.SystemName;
+            allmantSheet.Cells["B17"].Value = mets.WithdrawalDate;
+            allmantSheet.Cells["B18"].Value = mets.Comment;
+            allmantSheet.Cells["B19"].Value = mets.ProjectCode;
             allmantSheet.Cells["B20"].Value = mets.AccessionsId;
             allmantSheet.Cells["B21"].Value = mets.BatchId;
 

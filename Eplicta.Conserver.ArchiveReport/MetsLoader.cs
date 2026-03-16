@@ -59,7 +59,7 @@ public class MetsLoader
         {
             Files = files,
             Description = description,
-            ArchiveCreator = archiveCreator,
+            ArchiveBuilder = archiveCreator,
             SystemName = systemName,
             System = system,
             WithdrawalDate = withdrawalDate,

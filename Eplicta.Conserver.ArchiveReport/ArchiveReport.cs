@@ -1,40 +1,40 @@
 ﻿namespace Eplicta.Conserver.ArchiveReport;
 
-// Innehåller metadata för en arkivleverans samt dess filer.
+// Contains metadata
 public class ArchiveReport
 {
-    // Filer som ingår i leveransen.
-    public List<FileEntry> Files { get; set; } = new();
+    // Files that are included in the delivery
+    public List<FileEntry> Files { get; init; } = new();
 
-    // Grundläggande arkivinformation
-    public string Beskrivning { get; set; } = "";
-    public string Arkivbildare { get; set; } = "";
-    public string OrganisationsnummerArkivbildare { get; set; } = "";
+    // Basic archive information
+    public string Description { get; init; } = "";
+    public string ArchiveBuilder { get; init; } = "";
+    public string OrganizationNumberArchiveBuilder { get; init; } = "";
 
-    // Levererande organisation
-    public string LevererandeMyndighet { get; set; } = "";
-    public string OrganisationsnummerLevererande { get; set; } = "";
+    // Delivering organization
+    public string DeliveringOrganization { get; init; } = "";
+    public string DeliveringOrganizationNumber { get; init; } = "";
 
-    // Ursprungssystem
-    public string System { get; set; } = "";
-    public string Systemnamn { get; set; } = "";
+    // Original system information
+    public string System { get; init; } = "";
+    public string SystemName { get; init; } = "";
 
-    // Kontaktuppgifter
-    public string Kontaktperson { get; set; } = "";
-    public string Telefon { get; set; } = "";
-    public string Epost { get; set; } = "";
+    // Contact information
+    public string ContactPerson { get; init; } = "";
+    public string Telephone { get; init; } = "";
+    public string Email { get; init; } = "";
 
-    // Fakturainformation
-    public string Kostnadsstalle { get; set; } = "";
-    public string FakturaKontakt { get; set; } = "";
+    // Invoice information
+    public string CostPlace { get; init; } = "";
+    public string InvoiceContact { get; init; } = "";
 
-    // Arkivinformation
-    public string ArkivetsNamn { get; set; } = "";
-    public string Uttagsdatum { get; set; } = "";
-    public string Kommentar { get; set; } = "";
+    // Archive information
+    public string ArchiveName { get; init; } = "";
+    public string WithdrawalDate { get; init; } = "";
+    public string Comment { get; init; } = "";
 
-    // Intern identifiering
-    public string Projektkod { get; set; } = "";
-    public string AccessionsId { get; set; } = "";
-    public string BatchId { get; set; } = "";
+    // Internal identification
+    public string ProjectCode { get; init; } = "";
+    public string AccessionsId { get; init; } = "";
+    public string BatchId { get; init; } = "";
 }
