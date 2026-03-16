@@ -14,13 +14,57 @@ public class MetsLoader
         var sipEntry = FindSipXmlEntry(archive);
         var document = LoadXmlDocument(sipEntry);
 
-        var mets = new ArchiveReport();
+        var description = "";
+        var archiveCreator = "";
+        var systemName = "";
+        var system = "";
+        var withdrawalDate = "";
+        var comment = "";
+        List<FileEntry> files = new();
 
-        ParseModsMetadata(document, mets);
-        ParseArchivistMetadata(document, mets);
-        ScanFiles(zipPath, mets);
+        // Parse MODS metadata
+        var mods = document.Descendants()
+            .FirstOrDefault(x => x.Name.LocalName == "mods");
+        if (mods != null)
+        {
+            systemName = GetValue(mods, "identifier");
+            description = GetValue(mods, "title");
+            withdrawalDate = GetValue(mods, "dateIssued");
+            comment = GetValue(mods, "url");
+        }
 
-        return mets;
+        // Parse archivist metadata
+        var archivist = document.Descendants()
+            .FirstOrDefault(x =>
+                x.Name.LocalName == "agent" &&
+                x.Attribute("ROLE")?.Value == "ARCHIVIST");
+        if (archivist != null)
+        {
+            archiveCreator = GetValue(archivist, "name");
+            system = GetValue(archivist, "note");
+        }
+
+        // Scan files
+        try
+        {
+            var extractedRoot = FileScanner.ExtractNested(zipPath);
+            files = FileScanner.Scan(extractedRoot);
+        }
+        catch (Exception ex)
+        {
+            comment += $" | File scanning failed: {ex.Message}";
+        }
+
+        return new ArchiveReport
+        {
+            Files = files,
+            Description = description,
+            ArchiveCreator = archiveCreator,
+            SystemName = systemName,
+            System = system,
+            WithdrawalDate = withdrawalDate,
+            Comment = comment
+        };
     }
 
     /// Finds the sip.xml entry inside the zip archive.
@@ -36,50 +80,6 @@ public class MetsLoader
     {
         using var stream = entry.Open();
         return XDocument.Load(stream);
-    }
-
-    /// Extracts metadata from the MODS section.
-    private void ParseModsMetadata(XDocument doc, ArchiveReport mets)
-    {
-        var mods = doc.Descendants()
-            .FirstOrDefault(x => x.Name.LocalName == "mods");
-
-        if (mods == null)
-            return;
-
-        mets.Systemnamn = GetValue(mods, "identifier");
-        mets.Beskrivning = GetValue(mods, "title");
-        mets.Uttagsdatum = GetValue(mods, "dateIssued");
-        mets.Kommentar = GetValue(mods, "url");
-    }
-
-    /// Extracts metadata about the archivist/system.
-    private void ParseArchivistMetadata(XDocument doc, ArchiveReport mets)
-    {
-        var archivist = doc.Descendants()
-            .FirstOrDefault(x =>
-                x.Name.LocalName == "agent" &&
-                x.Attribute("ROLE")?.Value == "ARCHIVIST");
-
-        if (archivist == null)
-            return;
-
-        mets.Arkivbildare = GetValue(archivist, "name");
-        mets.System = GetValue(archivist, "note");
-    }
-
-    /// Scans files in the archive and attaches them to the MetsData object.
-    private void ScanFiles(string zipPath, ArchiveReport mets)
-    {
-        try
-        {
-            var extractedRoot = FileScanner.ExtractNested(zipPath);
-            mets.Files = FileScanner.Scan(extractedRoot);
-        }
-        catch (Exception ex)
-        {
-            mets.Kommentar += $" | File scanning failed: {ex.Message}";
-        }
     }
 
     /// Retrieves the value of an XML element by local name.
