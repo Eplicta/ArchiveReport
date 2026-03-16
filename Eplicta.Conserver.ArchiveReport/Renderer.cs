@@ -5,24 +5,24 @@ using OfficeOpenXml;
 
 namespace Eplicta.Conserver.ArchiveReport
 {
-    // Hanterar konvertering av zip + MetsData till Excel
+    // Manages the conversion of zip + MetsData to Excel
     public class Renderer
     {
-    // Kör hela processen och returnerar Excel som byte-array
+        // Runs the entire process and returns the Excel file as a byte array
         public byte[] GetBytes(string zipPath)
         {
-            // Läs metadata från zip-filen
+            // Reads metadata from the zip file
             var mets = new MetsLoader().Read(zipPath);
 
-            // Hämta assemblyn
+            // Fetches the assembly
             var assembly = Assembly.GetExecutingAssembly();
 
-            // Hämta inbäddad Excel-mall
+            // Fetches the embedded Excel template as a stream
             using var templateStream =
             assembly.GetManifestResourceStream("Eplicta.Conserver.ArchiveReport.Templates.mall_webb_2026.xlsx")
                 ?? throw new Exception("Kunde inte hitta den inbäddade Excel-mallen.");
 
-            // Öppna Excel-mallen
+            // Opens the excel template using EPPlus
             using var package = new ExcelPackage(templateStream);
 
             var allmantSheet = package.Workbook.Worksheets["Allmänt"]
@@ -31,7 +31,7 @@ namespace Eplicta.Conserver.ArchiveReport
             var filerSheet = package.Workbook.Worksheets["Filer"]
                 ?? throw new Exception("Kunde inte hitta bladet 'Filer'.");
 
-            // Fyll i metadata
+            // Fills in the metadata in the "Allmänt" sheet
             allmantSheet.Cells["B4"].Value = mets.Beskrivning;
             allmantSheet.Cells["B5"].Value = mets.Arkivbildare;
             allmantSheet.Cells["B6"].Value = mets.OrganisationsnummerArkivbildare;
@@ -51,7 +51,7 @@ namespace Eplicta.Conserver.ArchiveReport
             allmantSheet.Cells["B20"].Value = mets.AccessionsId;
             allmantSheet.Cells["B21"].Value = mets.BatchId;
 
-            // Fyll i filer
+            // Fills in the files in the "Filer" sheet, starting from row 2 (row 1 has headers)
             if (mets.Files != null && mets.Files.Count > 0)
             {
                 int row = 2;
