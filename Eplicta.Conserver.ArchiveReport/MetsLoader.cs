@@ -4,17 +4,17 @@ using System.Xml.Linq;
 
 namespace Eplicta.Conserver.ArchiveReport;
 
-public static class MetsReader
+public static class MetsLoader
 {
     /// Reads a zip archive and extracts metadata from sip.xml.
-    public static MetsData Read(string zipPath)
+    public static ArchiveReport Read(string zipPath)
     {
         using var archive = ZipFile.OpenRead(zipPath);
 
         var sipEntry = FindSipXmlEntry(archive);
         var document = LoadXmlDocument(sipEntry);
 
-        var mets = new MetsData();
+        var mets = new ArchiveReport();
 
         ParseModsMetadata(document, mets);
         ParseArchivistMetadata(document, mets);
@@ -39,7 +39,7 @@ public static class MetsReader
     }
 
     /// Extracts metadata from the MODS section.
-    private static void ParseModsMetadata(XDocument doc, MetsData mets)
+    private static void ParseModsMetadata(XDocument doc, ArchiveReport mets)
     {
         var mods = doc.Descendants()
             .FirstOrDefault(x => x.Name.LocalName == "mods");
@@ -54,7 +54,7 @@ public static class MetsReader
     }
 
     /// Extracts metadata about the archivist/system.
-    private static void ParseArchivistMetadata(XDocument doc, MetsData mets)
+    private static void ParseArchivistMetadata(XDocument doc, ArchiveReport mets)
     {
         var archivist = doc.Descendants()
             .FirstOrDefault(x =>
@@ -69,7 +69,7 @@ public static class MetsReader
     }
 
     /// Scans files in the archive and attaches them to the MetsData object.
-    private static void ScanFiles(string zipPath, MetsData mets)
+    private static void ScanFiles(string zipPath, ArchiveReport mets)
     {
         try
         {

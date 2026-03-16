@@ -1,7 +1,7 @@
 ﻿namespace Eplicta.Conserver.ArchiveReport;
 
 // Innehåller metadata för en arkivleverans samt dess filer.
-public class MetsData
+public class ArchiveReport
 {
     // Filer som ingår i leveransen.
     public List<FileEntry> Files { get; set; } = new();

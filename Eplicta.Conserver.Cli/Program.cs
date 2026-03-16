@@ -1,4 +1,4 @@
-﻿using Eplicta.Conserver.ArchiveReport;
+﻿using Eplicta.Conserver.;
 using OfficeOpenXml;
 
 namespace Eplicta.Conserver.Cli
@@ -60,7 +60,7 @@ namespace Eplicta.Conserver.Cli
             }
 
             // Read METS data from the archive
-            var mets = MetsReader.Read(zipPath);
+            var mets = MetsLoader.Read(zipPath);
 
             // Generate Excel report as byte array
             var excelBytes = Renderer.GetBytes(zipPath);
