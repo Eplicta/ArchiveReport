@@ -1,7 +1,7 @@
 ﻿namespace Eplicta.Conserver.ArchiveReport;
 
 // Contains metadata
-public class ArchiveReport
+public record ArchiveReport
 {
     // Files that are included in the delivery
     public List<FileEntry> Files { get; init; } = new();

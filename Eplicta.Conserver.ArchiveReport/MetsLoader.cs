@@ -4,7 +4,7 @@ using System.Xml.Linq;
 
 namespace Eplicta.Conserver.ArchiveReport;
 
-public class MetsLoader
+public record MetsLoader
 {
     /// Reads a zip archive and extracts metadata from sip.xml.
     public ArchiveReport Read(string zipPath, string setDescription = null, string setArchiveCeator = null, string setSystemName = null, string setSystem = null, string setWithdrawlDate = null, string setComment = null)
