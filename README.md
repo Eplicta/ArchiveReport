@@ -1,255 +1,141 @@
-# ANVÄNDARINSTRUKTIONER
+# Eplicta.Conserver.ArchiveReport
 
-1. cd \Users\T408\source\repos\ArchiveReporte\Eplicta.Conserver.Cli\Eplicta.Conserver.Cli> (kan behövas gå in i eplicta.conserver 2x)
-2. dotnet build -c Release
-3. klicka enter, det ska stå build successful (inga problem om det står warning eller så, men det måste stå successful)
-4. dotnet run -c Release -- [sökväg till eran zip map]
+A .NET library for generating Excel reports from Conserver archive deliveries.
 
-Det ska finnas en ny excel fil i era hämtade filer som heter resultat efter programmet körts korrekt 
+The package reads a SIP archive (ZIP), extracts metadata from the `sip.xml` METS file, scans the contained files, and produces a structured Excel report based on a predefined template.
 
-# MUST HAVE:
+## Features
 
-Excelark med information (FLIK 1 OCH FLIK 2)
+* Read **METS metadata** from `sip.xml`
+* Extract and scan **nested ZIP archives**
+* Collect file metadata such as:
 
-Program som blockerar otillåtna filer
+  * File name
+  * File type
+  * File size
+  * Charset
+  * Media duration (if available)
+  * File path
+* Generate a **formatted Excel report**
+* Uses an embedded Excel template
 
-Beskrivning av leveransen (OBLIGATORISK)
+## Installation
 
-Arkivbildare (OBLIGATORISK)
+Install via NuGet:
 
-Organisationsnummer arkivbildare (OBLIGATORISK)
+```bash
+dotnet add package Eplicta.Conserver.ArchiveReport
+```
 
-Levererande myndighet (OBLIGATORISK)
+or via Package Manager:
 
-Arkivets namn (OBLIGATORISK)
+```powershell
+Install-Package Eplicta.Conserver.ArchiveReport
+```
 
-Systemets namn (OBLIGATORISK)
+## Basic Usage
 
-Filnamn (OBLIGATORISK)
+The simplest way to generate a report is to call:
 
-Filtyp (OBLIGATORISK)
+```csharp
+using Eplicta.Conserver.ArchiveReport;
 
-Filtypsversion (OBLIGATORISK)
+Renderer.Save("archive.zip");
+```
 
-Storlek (OBLIGATORISK)
+This will:
 
-Teckenuppsättning (OBLIGATORISK)
+1. Read the archive
+2. Extract metadata from `sip.xml`
+3. Scan all files in the archive
+4. Generate an Excel report
+5. Save it next to the ZIP file
 
-Speltid (OBLIGATORISK FÖR VIDEOFILER OCH LJUDFILER)
+Example output:
 
-Sökväg (OBLIGATORISK)
+```
+archive.zip
+archive.xlsx
+```
 
-Sekretessgrad hos myndigheten (OBLIGATORISKT FÖR SEKRETESSBELAGDA UPPGIFTER) 
+## Generate Report as Bytes
 
-# CAN HAVE:
+If you want to handle the Excel file yourself (for example in a web API), you can retrieve the report as a byte array.
 
-Uttagsdatum (EJ OBLIGATORISK)
+```csharp
+using Eplicta.Conserver.ArchiveReport;
 
-Kontaktperson för e-fakturering (EJ OBLIGATORISK)
+var bytes = Renderer.GetBytes("archive.zip");
 
-Kostnadsställe (EJ OBLIGATORISK)
+File.WriteAllBytes("report.xlsx", bytes);
+```
 
-E-post-adress till kontaktperson (EJ OBLIGATORISK)
+## How It Works
 
-Telefonnummer till kontaktperson (EJ OBLIGATORISK)
+### 1. Read Archive Metadata
 
-Kontaktperson för leverans (EJ OBLIGATORISK)
+The package reads `sip.xml` inside the ZIP archive and extracts metadata such as:
 
-Servicebyrå/konsult (EJ OBLIGATORISK)
+* Archive creator
+* System name
+* Description
+* Extraction date
+* Comments
 
-Organisationsnummer myndighet (EJ OBLIGATORISK)
+### 2. Scan Files
 
-Behandling av personuppgifter (EJ OBLIGATORISK)
+The archive is extracted and scanned to collect file metadata including:
 
-Kommentar (EJ OBLIGATORISK)
+* File name
+* Extension
+* File size
+* Duration for media files (if available)
 
-# FILSTRUKTUR:
+### 3. Generate Excel Report
 
-Eplicta.Conserver.Cli/
+An Excel report is generated using a built-in template.
 
-├── Eplicta.Conserver.Cli.slnx
+The report contains two sheets:
 
-├── Eplicta.Conserver.Cli/
+**Allmänt**
 
-│      ├──── Eplicta.Conserver.Cli.csproj
+* Archive metadata
+* Contact information
+* System information
 
-│      └──── Program.cs
+**Filer**
 
-├── .gitignore
+* File name
+* File type
+* Size
+* Duration
+* Path
+* Security classification
+* Comments
 
-└── README.md
+## Example Workflow
 
-# RAPPORTSTRUKTUR
+```csharp
+using Eplicta.Conserver.ArchiveReport;
 
-Flik 1 (allmänt):
+string zipPath = @"C:\archives\delivery.zip";
 
-Riksarkivets diarienummer leveransöverenskommelse = LEVERERAS TOM. (FYLLS I AV RIKSARKIVET)
+// Generate report
+Renderer.Save(zipPath);
+```
 
-Riksarkivets diarienummer leverans = LEVERERAS TOM. (FYLLS I AV RIKSARKIVET)
+Result:
 
-Beskrivning av leveransen = Leverans avställning av extern webbsida 2025.
+```
+delivery.exe
+```
 
-Arkivbildare = Exempelmyndigheten
+## Requirements
 
-Organisationsnummer arkivbildare = 123456-7890
+* .NET 6 or later
+* EPPlus
+* TagLib#
 
-Levererande myndighet = Exempelverket
+## Error Handling
 
-Organisationsnummer levererande myndighet = 123456-7890
-
-Servicebyrå/Konsult = ABC-data
-
-Kontaktperson för leverans = Carl XVI Gustaf (Kung)
-
-Telefonnummer till kontaktperson = 012-345678 (Arkivarie), 08-9876543 (Konsult)
-
-E-post-adress till kontaktperson = fornamn.efternamnsson@gmail.com
-
-Kostnadsställe = 1234567
-
-Kontaktperson för e-fakturering = Evelina Exempelsson (Ekonom)
-
-Arkivets namn = Exempelmyndighetens arkiv
-
-Systemets namn = Exempelmyndighetens extern webbsida
-
-Uttagsdatum = 2025-01-01
-
-Kommentar = ..................................
-
-Projektkod = LEVERERAS TOM. (FYLLS I AV RIKSARKIVET)
-
-Accessions-ID = LEVERERAS TOM. (FYLLS I AV RIKSARKIVET)
-
-Batch-ID = LEVERERAS TOM. (FYLLS I AV RIKSARKIVET)
-
---------------------------------------------------
-
-Flik 2:
-
-Filnamn = index.html
-
-Filtyp = html/xml/xsl/xsd/dtd/txt/png/jpg/tiff osv
-
-Filtypsversion = 1b
-
-Storlek = 12345
-
-Teckenuppsättning = UTF-8
-
-Speltid = 00:23:10
-
-Sökväg = root\bilder
-
-Sekretessgrad hos myndigheten = personsekretess
-
-Behandling av personuppgifter = Ja
-
-Kommentar = startsida för webbsidan
-
---------------------------------------------------
-
-Flik 3:
-
-ERROR vid otillåten filtyp (exempelfil.gif - Filtyp'gif' är inte godkänd enligt RA-FS 2009:2)
-
-ERROR om dubellt filnamn detekterat (case-insensitive: {filnamn})
-
-# TILLÅTNA FILFORMAT ENLIGT RA-FS 2009:2, 3 KAP. TEKNISKA KRAV
-
-html/htm
-
-xhtml
-
-xml
-
-css
-
-xsl
-
-xsd
-
-dtd
-
-JavaScript
-
-txt
-
-SGML
-
-Sekventiella filer med fast fält- och postlängd
-
-Sekventiella filer med teckenseparerade fält
-
-XML
-
-PDF/A-1 (ISO 19005-1:2005)
-
-JPEG/jpg
-
-TIFF
-
-PNG
-
-PDF/A-1 (för skannade bilder)
-
-WAVE
-
-WMA
-
-OggVorbis
-
-MP3
-
-WMV
-
-MPEG
-
-AVI
-
-GML (SS-ISO 19136:2007)
-
-PDF/E-1 (ISO 24517-1:2008)
-
-CALS Raster File Format (för rasterformat)
-
-Databas/register-format
-
-Strukturerade dokument (XML)
-
-Kontorsdokument (PDF/A-1)
-
-PKCS #7
-
-XML-signatures
-
-# ÖVRIG INFORMATION:
-
-ÅÅÅÅ-MM-DD
-
-Exempel på korrekt skrivning = 101344
-
-HEJ.TXT och hej.txt = samma 
-
-Kontaktperson ska helst ha titel. Exempelvis Joar McFlurry (KONUNG)
-
-Gäller endast frysta webbplatser (EJ singlefile/WARC)
-
-Varje fil = en rad (index.html, script.js, style.css osv)
-
-Uppsala universitet, riksdagen mfl är beställare
-
-Godkända format för filer som bifogas leveransen ska levereras i enlighet
-med Riksarkivets krav, se RA-FS 2009:2, 3 kap. Tekniska krav
-
-Kan gå att arkivera otillåtna filer fast det kräver särskilt godkännande från riksarkivet (ORELEVANT?)
-
-Metadata = information om datan
-
-Sitemap = kan hämta information från (skapas av conserver)
-
-Sip -> zip -> zip
-
-NuGet för att omvandla sip/mets till excelark
-
-Beslut har tagits om att köra på must/can have strukturen
+If file scanning fails, the error message will be appended to the report comments so that the process can continue.

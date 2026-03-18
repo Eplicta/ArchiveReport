@@ -4,24 +4,27 @@
 		<TargetFramework>net10.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 
-		<PackageId>MetsDataCompiler</PackageId>
-		<Version>1.0.0</Version>
+		<PackageId>Eplicta.ArchiveReport</PackageId>
+		<Version>1.0.1</Version>
 
-		<Title>EplicaMetsPackage</Title>
-		<Authors>Malte Mohr, Max Robinson, Eylul Uzel, Arthur Brobäck</Authors>
-		<Company>Eplica</Company>
+		<Title>Eplicta.ArchiveReport</Title>
+		<Authors>Arthur Brobäck, Malte Mohr, Max Robinson, Eylul Uzel</Authors>
+		<Company>Eplicta</Company>
 
 		<Description>Creates an excel file with metadata retrieved from a package with a METS file inside</Description>
 
 		<PackageTags>METS excel metadata conserver</PackageTags>
 
-		<PackageProjectUrl>https://github.com/Eplica/ArchiveReport</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/Eplica/ArchiveReport</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/Eplicta/ArchiveReport</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/Eplicta/ArchiveReport</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
+		<PackageIconUrl>https://eplicta.se/wp-content/uploads/2016/07/cropped-Eplicta-logo-symbol-2.jpg</PackageIconUrl>
+
 	</PropertyGroup>
 
 	<ItemGroup>
