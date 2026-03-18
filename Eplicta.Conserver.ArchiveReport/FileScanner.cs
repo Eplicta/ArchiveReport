@@ -39,17 +39,14 @@ public static class FileScanner
     {
         var info = new FileInfo(filePath);
 
-        var entry = new FileEntry
+        return new FileEntry
         {
             FileName = info.Name,
             FileType = info.Extension.ToLowerInvariant(),
             SizeBytes = info.Length,
-            Path = filePath
+            Path = filePath,
+            Duration = TryReadDuration(filePath)
         };
-
-        entry.Duration = TryReadDuration(filePath);
-
-        return entry;
     }
 
     /// Attempts to read media duration using TagLib.

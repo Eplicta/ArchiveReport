@@ -1,5 +1,4 @@
-﻿using Eplicta.Conserver.ArchiveReport;
-using OfficeOpenXml;
+﻿using OfficeOpenXml;
 
 namespace Eplicta.Conserver.Cli
 {
@@ -8,7 +7,7 @@ namespace Eplicta.Conserver.Cli
         private const string ExcelLicenseName = "Lenovo User";
 
         static int Main(string[] args)
-        {
+         {
             ConfigureExcelLicense();
 
             if (!ValidateArguments(args))
@@ -60,13 +59,13 @@ namespace Eplicta.Conserver.Cli
             }
 
             // Read METS data from the archive
-            var mets = MetsReader.Read(zipPath);
+            var mets = new Eplicta.Conserver.ArchiveReport.MetsLoader().Read(zipPath);
 
             // Generate Excel report as byte array
-            var excelBytes = Renderer.GetBytes(zipPath);
+            var excelBytes = new Eplicta.Conserver.ArchiveReport.Renderer().GetBytes(mets);
 
             // Save the Excel file next to the zip archive
-            var outputPath = zipPath + ".xlsx";
+            var outputPath = zipPath + ".exe";
             File.WriteAllBytes(outputPath, excelBytes);
         }
     }

@@ -8,7 +8,7 @@
 		<Version>1.0.1</Version>
 
 		<Title>Eplicta.ArchiveReport</Title>
-		<Authors>Malte Mohr, Max Robinson, Eylul Uzel</Authors>
+		<Authors>Arthur Brobäck, Malte Mohr, Max Robinson, Eylul Uzel</Authors>
 		<Company>Eplicta</Company>
 
 		<Description>Creates an excel file with metadata retrieved from a package with a METS file inside</Description>

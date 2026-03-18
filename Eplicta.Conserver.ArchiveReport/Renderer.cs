@@ -5,7 +5,7 @@ using OfficeOpenXml;
 
 namespace Eplicta.Conserver.ArchiveReport
 {
-    // Manages the conversion of zip + MetsData to Excel
+    // Manages the conversion of MetsData to Excel
     public class Renderer
     {
         // Runs the entire process and returns the Excel file as a byte array
@@ -77,18 +77,14 @@ namespace Eplicta.Conserver.ArchiveReport
         }
 
         // Saves excel file 
-        public void Save(string zipPath)
+        public void Save(ArchiveReport mets, string outputPath)
         {
-            var excelBytes = GetBytes(zipPath);
+            var excelBytes = GetBytes(mets);
 
-            string excelPath = Path.Combine(
-                Path.GetDirectoryName(zipPath)!,
-                Path.GetFileNameWithoutExtension(zipPath) + ".exe");
-
-            File.WriteAllBytes(excelPath, excelBytes);
+            File.WriteAllBytes(outputPath, excelBytes);
 
             Console.WriteLine("Excel created:");
-            Console.WriteLine(excelPath);
+            Console.WriteLine(outputPath);
         }
     }
 }
