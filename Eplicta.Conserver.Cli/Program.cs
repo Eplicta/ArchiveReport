@@ -65,7 +65,7 @@ namespace Eplicta.Conserver.Cli
             var excelBytes = new Eplicta.Conserver.ArchiveReport.Renderer().GetBytes(mets);
 
             // Save the Excel file next to the zip archive
-            var outputPath = zipPath + ".xlsx";
+            var outputPath = zipPath + ".exe";
             File.WriteAllBytes(outputPath, excelBytes);
         }
     }
