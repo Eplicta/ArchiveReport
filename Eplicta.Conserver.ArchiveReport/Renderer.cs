@@ -6,7 +6,7 @@ using OfficeOpenXml;
 namespace Eplicta.Conserver.ArchiveReport
 {
     // Manages the conversion of MetsData to Excel
-    public class Renderer
+    public record Renderer
     {
         // Runs the entire process and returns the Excel file as a byte array
         public byte[] GetBytes(ArchiveReport mets)
