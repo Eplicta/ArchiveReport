@@ -9,10 +9,8 @@ namespace Eplicta.Conserver.ArchiveReport
     public class Renderer
     {
         // Runs the entire process and returns the Excel file as a byte array
-        public byte[] GetBytes(string zipPath)
+        public byte[] GetBytes(ArchiveReport mets)
         {
-            // Reads metadata from the zip file
-            var mets = new MetsLoader().Read(zipPath);
 
             // Fetches the assembly
             var assembly = Assembly.GetExecutingAssembly();
@@ -81,16 +79,16 @@ namespace Eplicta.Conserver.ArchiveReport
         // Sparar Excel-filen till disk
         public void Save(string zipPath)
         {
-            var excelBytes = GetBytes(zipPath);
+            //var excelBytes = GetBytes(zipPath);
 
-            string excelPath = Path.Combine(
-                Path.GetDirectoryName(zipPath)!,
-                Path.GetFileNameWithoutExtension(zipPath) + ".exe");
+            //string excelPath = Path.Combine(
+            //    Path.GetDirectoryName(zipPath)!,
+            //    Path.GetFileNameWithoutExtension(zipPath) + ".exe");
 
-            File.WriteAllBytes(excelPath, excelBytes);
+            //File.WriteAllBytes(excelPath, excelBytes);
 
-            Console.WriteLine("Excel created:");
-            Console.WriteLine(excelPath);
+            //Console.WriteLine("Excel created:");
+            //Console.WriteLine(excelPath);
         }
     }
 }
