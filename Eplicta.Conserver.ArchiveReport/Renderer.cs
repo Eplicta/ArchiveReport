@@ -72,11 +72,11 @@ namespace Eplicta.Conserver.ArchiveReport
                 }
             }
 
-            // Returnera Excel som byte-array
+            // Return excel as byte array
             return package.GetAsByteArray();
         }
 
-        // Sparar Excel-filen till disk
+        // Saves excel file 
         public void Save(string zipPath)
         {
             //var excelBytes = GetBytes(zipPath);
