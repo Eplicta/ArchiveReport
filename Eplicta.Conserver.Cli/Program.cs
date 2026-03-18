@@ -38,17 +38,23 @@ namespace Eplicta.Conserver.Cli
             return true;
         }
 
-        // Processes all provided zip files.
-        private static void ProcessZipFiles(string[] zipPaths)
+        // Processes only the first zip file, logs the rest.
+        private static void ProcessZipFiles(string[] args)
         {
-            foreach (var zipPath in zipPaths)
+            var zipPath = args[0];
+            var overrides = args.Skip(1).ToArray();
+
+            ProcessSingleZip(zipPath, overrides);
+
+            // Still log them if you want
+            foreach (var o in overrides)
             {
-                ProcessSingleZip(zipPath);
+                Console.WriteLine($"Override: {o}");
             }
         }
 
         // Processes a single zip archive and generates an Excel report.
-        private static void ProcessSingleZip(string zipPath)
+        private static void ProcessSingleZip(string zipPath, string[] overrides)
         {
             Console.WriteLine($"Processing: {zipPath}");
 
@@ -58,13 +64,26 @@ namespace Eplicta.Conserver.Cli
                 return;
             }
 
-            // Read METS data from the archive
-            var mets = new Eplicta.Conserver.ArchiveReport.MetsLoader().Read(zipPath);
+            // Map overrides safely (avoid index errors)
+            string description = overrides.Length > 0 ? overrides[0] : null;
+            string archiveCreator = overrides.Length > 1 ? overrides[1] : null;
+            string systemName = overrides.Length > 2 ? overrides[2] : null;
+            string system = overrides.Length > 3 ? overrides[3] : null;
+            string withdrawalDate = overrides.Length > 4 ? overrides[4] : null;
+            string comment = overrides.Length > 5 ? overrides[5] : null;
 
-            // Generate Excel report as byte array
+            var mets = new Eplicta.Conserver.ArchiveReport.MetsLoader().Read(
+                zipPath,
+                description,
+                archiveCreator,
+                systemName,
+                system,
+                withdrawalDate,
+                comment
+            );
+
             var excelBytes = new Eplicta.Conserver.ArchiveReport.Renderer().GetBytes(mets);
 
-            // Save the Excel file next to the zip archive
             var outputPath = zipPath + ".exe";
             File.WriteAllBytes(outputPath, excelBytes);
         }

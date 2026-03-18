@@ -54,6 +54,12 @@ public class MetsLoader
         {
             comment += $" | File scanning failed: {ex.Message}";
         }
+        if (!string.IsNullOrEmpty(setDescription)) description = setDescription;
+        if (!string.IsNullOrEmpty(setArchiveCeator)) archiveCreator = setArchiveCeator;
+        if (!string.IsNullOrEmpty(setComment)) comment = setComment;
+        if (!string.IsNullOrEmpty(setSystemName)) systemName = setSystemName;
+        if (!string.IsNullOrEmpty(setSystem)) system = setSystem;
+        if (!string.IsNullOrEmpty(setWithdrawlDate)) withdrawalDate = setWithdrawlDate;
 
         return new ArchiveReport
         {
