@@ -1,35 +1,35 @@
 ﻿namespace Eplicta.Conserver.ArchiveReport;
 
-// Metadata för en fil i arkivleveransen.
+// Metadata for a file in the archive delivery.
 public class FileEntry
 {
-    // Filens namn
-    public string FileName { get; set; } = "";
+    // The name of the file
+    public string FileName { get; init; } = "";
 
-    // Filformat (t.ex. PDF, XML)
-    public string FileType { get; set; } = "";
+    // Filetype (ex. PDF, XML)
+    public string FileType { get; init; } = "";
 
-    // Version av filformatet
-    public string FileTypeVersion { get; set; } = "";
+    // Version of the filetype
+    public string FileTypeVersion { get; init; } = "";
 
-    // Filstorlek i bytes
-    public long SizeBytes { get; set; }
+    // Filesize in bytes
+    public long SizeBytes { get; init; }
 
-    // Teckenkodning
-    public string Charset { get; set; } = "";
+    // Character encoding
+    public string Charset { get; init; } = "";
 
-    // Längd för mediafiler (valfri)
-    public TimeSpan? Duration { get; set; }
+    // Length of media files (if applicable)
+    public TimeSpan? Duration { get; init; }
 
-    // Sökväg till filen
-    public string Path { get; set; } = "";
+    // Searchpath to the file
+    public string Path { get; init; } = "";
 
-    // Sekretessklassning
-    public string Secrecy { get; set; } = "";
+    // Security classification
+    public string Secrecy { get; init; } = "";
 
-    // Hantering av personuppgifter
-    public string PersonalDataHandling { get; set; } = "";
+    // Management of personal data
+    public string PersonalDataHandling { get; init; } = "";
 
-    // Övrig kommentar
-    public string Comment { get; set; } = "";
+    // Additional comments
+    public string Comment { get; init; } = "";
 }

@@ -1,7 +1,8 @@
 {
   "profiles": {
     "Eplicta.Conserver.Cli": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "a b c"
     }
   }
 }
