@@ -2,8 +2,26 @@
 
 namespace Eplicta.Conserver.Cli
 {
+
     internal static class Program
     {
+        private static Dictionary<string, string> ParseNamedArgs(string[] args)
+        {
+            var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var arg in args)
+            {
+                if (!arg.StartsWith("--")) continue;
+
+                var parts = arg.Substring(2).Split('=', 2);
+                if (parts.Length == 2)
+                {
+                    dict[parts[0]] = parts[1];
+                }
+            }
+
+            return dict;
+        }
         private const string ExcelLicenseName = "Lenovo User";
 
         static int Main(string[] args)
@@ -42,19 +60,15 @@ namespace Eplicta.Conserver.Cli
         private static void ProcessZipFiles(string[] args)
         {
             var zipPath = args[0];
-            var overrides = args.Skip(1).ToArray();
 
-            ProcessSingleZip(zipPath, overrides);
+            // Parse named arguments from remaining args
+            var options = ParseNamedArgs(args.Skip(1).ToArray());
 
-            // Still log them if you want
-            foreach (var o in overrides)
-            {
-                Console.WriteLine($"Override: {o}");
-            }
+            ProcessSingleZip(zipPath, options);
         }
 
         // Processes a single zip archive and generates an Excel report.
-        private static void ProcessSingleZip(string zipPath, string[] overrides)
+        private static void ProcessSingleZip(string zipPath, Dictionary<string, string> options)
         {
             Console.WriteLine($"Processing: {zipPath}");
 
@@ -64,28 +78,23 @@ namespace Eplicta.Conserver.Cli
                 return;
             }
 
-            // Map overrides safely (avoid index errors)
-            string description = overrides.Length > 0 ? overrides[0] : null;
-            string archiveCreator = overrides.Length > 1 ? overrides[1] : null;
-            string systemName = overrides.Length > 2 ? overrides[2] : null;
-            string system = overrides.Length > 3 ? overrides[3] : null;
-            string withdrawalDate = overrides.Length > 4 ? overrides[4] : null;
-            string comment = overrides.Length > 5 ? overrides[5] : null;
-
             var mets = new Eplicta.Conserver.ArchiveReport.MetsLoader().Read(
                 zipPath,
-                description,
-                archiveCreator,
-                systemName,
-                system,
-                withdrawalDate,
-                comment
+                options.GetValueOrDefault("description"),
+                options.GetValueOrDefault("creator"),
+                options.GetValueOrDefault("systemname"),
+                options.GetValueOrDefault("system"),
+                options.GetValueOrDefault("withdrawaldate"),
+                options.GetValueOrDefault("comment")
             );
 
             var excelBytes = new Eplicta.Conserver.ArchiveReport.Renderer().GetBytes(mets);
 
-            var outputPath = zipPath + ".exe";
+            var outputPath = Path.ChangeExtension(zipPath, ".xlsx");
             File.WriteAllBytes(outputPath, excelBytes);
         }
+
     }
+
+
 }
