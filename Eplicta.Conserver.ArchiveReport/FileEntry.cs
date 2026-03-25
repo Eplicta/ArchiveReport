@@ -1,7 +1,7 @@
 ﻿namespace Eplicta.Conserver.ArchiveReport;
 
 // Metadata for a file in the archive delivery.
-public class FileEntry
+public record FileEntry
 {
     // The name of the file
     public string FileName { get; init; } = "";
