@@ -7,7 +7,14 @@ namespace Eplicta.Conserver.ArchiveReport;
 public record MetsLoader
 {
     /// Reads a zip archive and extracts metadata from sip.xml.
-    public ArchiveReport Read(string zipPath, string setDescription = null, string setArchiveCeator = null, string setSystemName = null, string setSystem = null, string setWithdrawlDate = null, string setComment = null)
+    public ArchiveReport Read(
+    string zipPath,
+    string? setDescription = null,
+    string? setArchiveCreator = null,
+    string? setSystemName = null,
+    string? setSystem = null,
+    string? setWithdrawalDate = null,
+    string? setComment = null)
     {
         using var archive = ZipFile.OpenRead(zipPath);
 
@@ -55,11 +62,11 @@ public record MetsLoader
             comment += $" | File scanning failed: {ex.Message}";
         }
         if (!string.IsNullOrEmpty(setDescription)) description = setDescription;
-        if (!string.IsNullOrEmpty(setArchiveCeator)) archiveCreator = setArchiveCeator;
+        if (!string.IsNullOrEmpty(setArchiveCreator)) archiveCreator = setArchiveCreator;
         if (!string.IsNullOrEmpty(setComment)) comment = setComment;
         if (!string.IsNullOrEmpty(setSystemName)) systemName = setSystemName;
         if (!string.IsNullOrEmpty(setSystem)) system = setSystem;
-        if (!string.IsNullOrEmpty(setWithdrawlDate)) withdrawalDate = setWithdrawlDate;
+        if (!string.IsNullOrEmpty(setWithdrawalDate)) withdrawalDate = setWithdrawalDate;
 
         return new ArchiveReport
         {
