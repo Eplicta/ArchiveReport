@@ -27,7 +27,7 @@ public static class FileScanner
 
         foreach (var filePath in files)
         {
-            var entry = CreateFileEntry(filePath);
+            var entry = CreateFileEntry(filePath, rootDirectory);
             results.Add(entry);
         }
 
@@ -35,16 +35,17 @@ public static class FileScanner
     }
 
     /// Creates a FileEntry object from a file on disk.
-    private static FileEntry CreateFileEntry(string filePath)
+    private static FileEntry CreateFileEntry(string filePath, string rootDirectory)
     {
         var info = new FileInfo(filePath);
+        var relativePath = Path.GetRelativePath(rootDirectory, filePath);
 
         return new FileEntry
         {
             FileName = info.Name,
             FileType = info.Extension.ToLowerInvariant(),
             SizeBytes = info.Length,
-            Path = filePath,
+            Path = relativePath,
             Duration = TryReadDuration(filePath)
         };
     }
