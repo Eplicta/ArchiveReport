@@ -30,23 +30,24 @@ public static class AipConverter
 
             // Create the ZIP archive with the pre-read files
             using var outputStream = new MemoryStream();
-            using var zipArchive = new ZipArchive(outputStream, ZipArchiveMode.Create);
-
-            // Create METS metadata XML
-            var metsXml = GenerateMetsXml(archiveId, sipData);
-            var metsEntry = zipArchive.CreateEntry("aip.xml");
-            using (var streamWriter = new StreamWriter(metsEntry.Open()))
+            using (var zipArchive = new ZipArchive(outputStream, ZipArchiveMode.Create, leaveOpen: true))
             {
-                streamWriter.Write(metsXml);
-            }
-
-            // Add all extracted files to the archive
-            foreach (var (filename, data) in fileData)
-            {
-                var fileEntry = zipArchive.CreateEntry(filename);
-                using (var entryStream = fileEntry.Open())
+                // Create METS metadata XML
+                var metsXml = GenerateMetsXml(archiveId, sipData);
+                var metsEntry = zipArchive.CreateEntry("aip.xml");
+                using (var streamWriter = new StreamWriter(metsEntry.Open()))
                 {
-                    entryStream.Write(data, 0, data.Length);
+                    streamWriter.Write(metsXml);
+                }
+
+                // Add all extracted files to the archive
+                foreach (var (filename, data) in fileData)
+                {
+                    var fileEntry = zipArchive.CreateEntry(filename);
+                    using (var entryStream = fileEntry.Open())
+                    {
+                        entryStream.Write(data, 0, data.Length);
+                    }
                 }
             }
 

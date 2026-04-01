@@ -34,7 +34,7 @@ public static class DipConverter
         try
         {
             using var outputStream = new MemoryStream();
-            using (var zipArchive = new ZipArchive(outputStream, ZipArchiveMode.Create))
+            using (var zipArchive = new ZipArchive(outputStream, ZipArchiveMode.Create, leaveOpen: true))
             {
                 // Create METS metadata XML for DIP
                 var metsXml = GenerateDipMetsXml(distributionId, aipMetadata);
