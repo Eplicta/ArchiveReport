@@ -1,13 +1,11 @@
 using System.IO.Compression;
-using Eplicta.Mets;
 
 namespace Eplicta.Conserver.ArchiveReport;
 
 public static class AipConverter
 {
-    public static byte[] ConvertSipToAip(string sipZipPath, string? archiveId = null)
+    public static byte[] ConvertSipToAip(string sipZipPath, string archiveId = null)
     {
-        /*
         archiveId ??= Guid.NewGuid().ToString();
 
         var loader = new MetsLoader();
@@ -18,75 +16,71 @@ public static class AipConverter
 
         try
         {
-            var builder = new Builder();
+            using var outputStream = new MemoryStream();
+            using var zipArchive = new ZipArchive(outputStream, ZipArchiveMode.Create);
 
-            builder.SetMetsAttributes(new[]
+            // Create METS metadata XML
+            var metsXml = GenerateMetsXml(archiveId, sipData);
+            var metsEntry = zipArchive.CreateEntry("aip.xml");
+            using (var streamWriter = new StreamWriter(metsEntry.Open()))
             {
-                new MetsData.MetsAttribute
-                {
-                    Name = MetsData.EMetsAttributeName.ObjId,
-                    Value = archiveId
-                }
-            });
-
-            if (!string.IsNullOrEmpty(sipData.ArchiveBuilder))
-            {
-                builder.AddAgent(new MetsData.AgentData
-                {
-                    Role = MetsData.ERole.CREATOR,
-                    Type = MetsData.EType.ORGANIZATION,
-                    Name = sipData.ArchiveBuilder,
-                    Note = sipData.System
-                });
+                streamWriter.Write(metsXml);
             }
 
-            builder.AddAgent(new MetsData.AgentData
-            {
-                Role = MetsData.ERole.ARCHIVIST,
-                Type = MetsData.EType.ORGANIZATION,
-                Name = "Eplicta Archive",
-                Note = "Long-term preservation policy"
-            });
-
-            builder.SetModsSection(new MetsData.ModsSectionData
-            {
-                Identifier = sipData.SystemName ?? "unknown",
-                ModsTitle = sipData.Description ?? "Archived Package",
-                DateIssued = DateTime.UtcNow,
-                Publisher = sipData.DeliveringOrganization ?? sipData.ArchiveBuilder,
-                AccessCondition = "PuL"
-            });
-
+            // Add all extracted files to the archive
             foreach (var file in files)
             {
                 if (File.Exists(file.Path))
                 {
-                    var data = File.ReadAllBytes(file.Path);
-                    builder.AddFile(new DataFileSource
+                    var fileEntry = zipArchive.CreateEntry(file.FileName);
+                    using (var fileStream = File.OpenRead(file.Path))
+                    using (var entryStream = fileEntry.Open())
                     {
-                        Name = Path.GetFileName(file.Path),
-                        Data = data,
-                        ChecksumType = EChecksumType.SHA256
-                    });
+                        fileStream.CopyTo(entryStream);
+                    }
                 }
             }
 
-            var metsData = builder.Build();
-            var renderer = new Renderer(metsData);
-            var archive = renderer.GetArchiveStream(
-                ArchiveFormat.Zip,
-                metsFileName: "aip.xml",
-                prettify: true
-            );
-
-            return archive.Stream.ToArray();
+            return outputStream.ToArray();
         }
         finally
         {
             try { Directory.Delete(extractedPath, true); }
             catch { }
         }
-        */
-        throw new NotImplementedException("AIP conversion not yet enabled");
+    }
+
+    private static string GenerateMetsXml(string archiveId, ArchiveReport sipData)
+    {
+        var timestamp = DateTime.UtcNow.ToString("o");
+        var xml = $@"<?xml version=""1.0"" encoding=""UTF-8""?>
+<mets xmlns=""http://www.loc.gov/METS/"" OBJID=""{archiveId}"">
+    <metsHdr CREATEDATE=""{timestamp}"">
+        <agent ROLE=""CREATOR"" TYPE=""ORGANIZATION"">
+            <name>{System.Security.SecurityElement.Escape(sipData.ArchiveBuilder ?? "Unknown")}</name>
+        </agent>
+        <agent ROLE=""ARCHIVIST"" TYPE=""ORGANIZATION"">
+            <name>Eplicta Archive</name>
+        </agent>
+    </metsHdr>
+    <dmdSec ID=""dmd1"">
+        <mdWrap MDTYPE=""MODS"">
+            <xmlData>
+                <mods xmlns=""http://www.loc.gov/mods/v3"">
+                    <identifier>{System.Security.SecurityElement.Escape(sipData.SystemName ?? archiveId)}</identifier>
+                    <titleInfo>
+                        <title>{System.Security.SecurityElement.Escape(sipData.Description ?? "Archived Package")}</title>
+                    </titleInfo>
+                    <originInfo>
+                        <dateIssued encoding=""w3cdtf"">{DateTime.UtcNow:yyyy-MM-dd}</dateIssued>
+                        <publisher>{System.Security.SecurityElement.Escape(sipData.DeliveringOrganization ?? sipData.ArchiveBuilder ?? "Unknown")}</publisher>
+                    </originInfo>
+                    <accessCondition>PuL</accessCondition>
+                </mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+</mets>";
+        return xml;
     }
 }

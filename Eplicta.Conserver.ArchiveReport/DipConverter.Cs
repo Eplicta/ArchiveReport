@@ -1,13 +1,11 @@
 using System.IO.Compression;
-using Eplicta.Mets;
 
 namespace Eplicta.Conserver.ArchiveReport;
 
 public static class DipConverter
 {
-    public static byte[] ConvertAipToDip(string aipZipPath, string? distributionId = null)
+    public static byte[] ConvertAipToDip(string aipZipPath, string distributionId = null)
     {
-        /*
         distributionId ??= Guid.NewGuid().ToString();
 
         var dipFiles = new List<(string filename, byte[] data)>();
@@ -34,76 +32,76 @@ public static class DipConverter
 
         try
         {
-            var builder = new Builder();
+            using var outputStream = new MemoryStream();
+            using var zipArchive = new ZipArchive(outputStream, ZipArchiveMode.Create);
 
-            builder.SetMetsAttributes(new[]
+            // Create METS metadata XML for DIP
+            var metsXml = GenerateDipMetsXml(distributionId, aipMetadata);
+            var metsEntry = zipArchive.CreateEntry("dip.xml");
+            using (var streamWriter = new StreamWriter(metsEntry.Open()))
             {
-                new MetsData.MetsAttribute
-                {
-                    Name = MetsData.EMetsAttributeName.ObjId,
-                    Value = distributionId
-                }
-            });
-
-            builder.AddAgent(new MetsData.AgentData
-            {
-                Role = MetsData.ERole.CREATOR,
-                Type = MetsData.EType.ORGANIZATION,
-                Name = aipMetadata.Creator ?? "Unknown Submitter",
-                Note = "Original submitter information"
-            });
-
-            builder.AddAgent(new MetsData.AgentData
-            {
-                Role = MetsData.ERole.OTHER,
-                Type = MetsData.EType.ORGANIZATION,
-                Name = "Eplicta Archive",
-                Note = "This is a distribution copy for user access"
-            });
-
-            builder.SetModsSection(new MetsData.ModsSectionData
-            {
-                Identifier = aipMetadata.Identifier ?? distributionId,
-                ModsTitle = aipMetadata.Title ?? "Distribution Package",
-                DateIssued = DateTime.UtcNow,
-                Publisher = aipMetadata.Publisher ?? "Eplicta Archive",
-                AccessCondition = aipMetadata.AccessCondition ?? "Open"
-            });
-
-            foreach (var (filename, filedata) in dipFiles)
-            {
-                builder.AddFile(new DataFileSource
-                {
-                    Name = filename,
-                    Data = filedata,
-                    ChecksumType = EChecksumType.SHA256
-                });
+                streamWriter.Write(metsXml);
             }
 
-            var metsData = builder.Build();
-            var renderer = new Renderer(metsData);
-            var archive = renderer.GetArchiveStream(
-                ArchiveFormat.Zip,
-                metsFileName: "dip.xml",
-                prettify: true
-            );
+            // Add all files to the distribution package
+            foreach (var (filename, filedata) in dipFiles)
+            {
+                var fileEntry = zipArchive.CreateEntry(filename);
+                using (var entryStream = fileEntry.Open())
+                {
+                    entryStream.Write(filedata, 0, filedata.Length);
+                }
+            }
 
-            return archive.Stream.ToArray();
+            return outputStream.ToArray();
         }
         catch (Exception ex)
         {
             throw new InvalidOperationException(
-                $"Failed to convert AIP '{aipZipPath}' to DIP: {ex.Message}",
+                $"Failed to convert AIP ''{aipZipPath}'' to DIP: {ex.Message}",
                 ex
             );
         }
-        */
-        throw new NotImplementedException("DIP conversion not yet enabled");
+    }
+
+    private static string GenerateDipMetsXml(string distributionId, AipMetadata metadata)
+    {
+        var timestamp = DateTime.UtcNow.ToString("o");
+        var xml = $@"<?xml version=""1.0"" encoding=""UTF-8""?>
+<mets xmlns=""http://www.loc.gov/METS/"" OBJID=""{distributionId}"">
+    <metsHdr CREATEDATE=""{timestamp}"">
+        <agent ROLE=""CREATOR"" TYPE=""ORGANIZATION"">
+            <name>{System.Security.SecurityElement.Escape(metadata.Creator ?? "Unknown Submitter")}</name>
+            <note>Original submitter information</note>
+        </agent>
+        <agent ROLE=""OTHER"" TYPE=""ORGANIZATION"">
+            <name>Eplicta Archive</name>
+            <note>This is a distribution copy for user access</note>
+        </agent>
+    </metsHdr>
+    <dmdSec ID=""dmd1"">
+        <mdWrap MDTYPE=""MODS"">
+            <xmlData>
+                <mods xmlns=""http://www.loc.gov/mods/v3"">
+                    <identifier>{System.Security.SecurityElement.Escape(metadata.Identifier ?? distributionId)}</identifier>
+                    <titleInfo>
+                        <title>{System.Security.SecurityElement.Escape(metadata.Title ?? "Distribution Package")}</title>
+                    </titleInfo>
+                    <originInfo>
+                        <dateIssued encoding=""w3cdtf"">{DateTime.UtcNow:yyyy-MM-dd}</dateIssued>
+                        <publisher>{System.Security.SecurityElement.Escape(metadata.Publisher ?? "Eplicta Archive")}</publisher>
+                    </originInfo>
+                    <accessCondition>{System.Security.SecurityElement.Escape(metadata.AccessCondition ?? "Open")}</accessCondition>
+                </mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+</mets>";
+        return xml;
     }
 
     private static AipMetadata ExtractMetadataFromAip(string aipZipPath)
     {
-        /*
         var metadata = new AipMetadata();
 
         try
@@ -130,13 +128,10 @@ public static class DipConverter
         }
 
         return metadata;
-        */
-        return new AipMetadata();
     }
 
     private static AipMetadata ParseMetadataFromXml(string xmlContent)
     {
-        /*
         var metadata = new AipMetadata();
 
         try
@@ -162,29 +157,24 @@ public static class DipConverter
         }
         catch
         {
-        }
+        } 
 
         return metadata;
-        */
-        return new AipMetadata();
     }
 
-    private static string? ExtractXmlValue(string xml, string elementName)
+    private static string ExtractXmlValue(string xml, string elementName)
     {
-        /*
         var pattern = $@"<{elementName}[^>]*>([^<]+)</{elementName}>";
         var match = System.Text.RegularExpressions.Regex.Match(xml, pattern);
         return match.Success ? match.Groups[1].Value : null;
-        */
-        return null;
     }
 
     private class AipMetadata
     {
-        public string? Identifier { get; set; }
-        public string? Title { get; set; }
-        public string? Creator { get; set; }
-        public string? Publisher { get; set; }
-        public string? AccessCondition { get; set; }
+        public string Identifier { get; set; }
+        public string Title { get; set; }
+        public string Creator { get; set; }
+        public string Publisher { get; set; }
+        public string AccessCondition { get; set; }
     }
 }
