@@ -16,6 +16,19 @@ public static class AipConverter
 
         try
         {
+            // Read all files BEFORE deleting the temporary directory
+            var fileData = new List<(string filename, byte[] data)>();
+            foreach (var file in files)
+            {
+                var fullPath = Path.Combine(extractedPath, file.Path);
+                if (File.Exists(fullPath))
+                {
+                    var data = File.ReadAllBytes(fullPath);
+                    fileData.Add((file.FileName, data));
+                }
+            }
+
+            // Create the ZIP archive with the pre-read files
             using var outputStream = new MemoryStream();
             using var zipArchive = new ZipArchive(outputStream, ZipArchiveMode.Create);
 
@@ -28,16 +41,12 @@ public static class AipConverter
             }
 
             // Add all extracted files to the archive
-            foreach (var file in files)
+            foreach (var (filename, data) in fileData)
             {
-                if (File.Exists(file.Path))
+                var fileEntry = zipArchive.CreateEntry(filename);
+                using (var entryStream = fileEntry.Open())
                 {
-                    var fileEntry = zipArchive.CreateEntry(file.FileName);
-                    using (var fileStream = File.OpenRead(file.Path))
-                    using (var entryStream = fileEntry.Open())
-                    {
-                        fileStream.CopyTo(entryStream);
-                    }
+                    entryStream.Write(data, 0, data.Length);
                 }
             }
 

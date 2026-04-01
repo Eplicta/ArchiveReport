@@ -9,14 +9,15 @@ public static class DipConverter
         distributionId ??= Guid.NewGuid().ToString();
 
         var dipFiles = new List<(string filename, byte[] data)>();
-        
+
         using (var zipStream = File.OpenRead(aipZipPath))
         using (var zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read))
         {
             foreach (var entry in zipArchive.Entries)
             {
                 if (!entry.Name.Equals("aip.xml", StringComparison.OrdinalIgnoreCase) &&
-                    !entry.Name.Equals("metadata.xml", StringComparison.OrdinalIgnoreCase))
+                    !entry.Name.Equals("metadata.xml", StringComparison.OrdinalIgnoreCase) &&
+                    !entry.Name.Equals("dip.xml", StringComparison.OrdinalIgnoreCase))
                 {
                     using (var stream = entry.Open())
                     using (var memory = new MemoryStream())
@@ -33,23 +34,24 @@ public static class DipConverter
         try
         {
             using var outputStream = new MemoryStream();
-            using var zipArchive = new ZipArchive(outputStream, ZipArchiveMode.Create);
-
-            // Create METS metadata XML for DIP
-            var metsXml = GenerateDipMetsXml(distributionId, aipMetadata);
-            var metsEntry = zipArchive.CreateEntry("dip.xml");
-            using (var streamWriter = new StreamWriter(metsEntry.Open()))
+            using (var zipArchive = new ZipArchive(outputStream, ZipArchiveMode.Create))
             {
-                streamWriter.Write(metsXml);
-            }
-
-            // Add all files to the distribution package
-            foreach (var (filename, filedata) in dipFiles)
-            {
-                var fileEntry = zipArchive.CreateEntry(filename);
-                using (var entryStream = fileEntry.Open())
+                // Create METS metadata XML for DIP
+                var metsXml = GenerateDipMetsXml(distributionId, aipMetadata);
+                var metsEntry = zipArchive.CreateEntry("dip.xml");
+                using (var streamWriter = new StreamWriter(metsEntry.Open()))
                 {
-                    entryStream.Write(filedata, 0, filedata.Length);
+                    streamWriter.Write(metsXml);
+                }
+
+                // Add all files to the distribution package
+                foreach (var (filename, filedata) in dipFiles)
+                {
+                    var fileEntry = zipArchive.CreateEntry(filename);
+                    using (var entryStream = fileEntry.Open())
+                    {
+                        entryStream.Write(filedata, 0, filedata.Length);
+                    }
                 }
             }
 
@@ -58,7 +60,7 @@ public static class DipConverter
         catch (Exception ex)
         {
             throw new InvalidOperationException(
-                $"Failed to convert AIP ''{aipZipPath}'' to DIP: {ex.Message}",
+                $"Failed to convert AIP '{aipZipPath}' to DIP: {ex.Message}",
                 ex
             );
         }
