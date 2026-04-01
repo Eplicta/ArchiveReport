@@ -150,6 +150,25 @@ namespace Eplicta.Conserver.Cli
             var excelBytes = new Eplicta.Conserver.ArchiveReport.Renderer().GetBytes(mets);
 
             var outputPath = Path.ChangeExtension(zipPath, ".xlsx");
+
+            // Try to write the file with retry logic
+            int maxRetries = 3;
+            for (int i = 0; i < maxRetries; i++)
+            {
+                try
+                {
+                    File.WriteAllBytes(outputPath, excelBytes);
+                    Console.WriteLine($"✓ Excel report saved: {outputPath}\n");
+                    return;
+                }
+                catch (IOException) when (i < maxRetries - 1)
+                {
+                    Console.WriteLine($"File is in use, retrying in 500ms... ({i + 1}/{maxRetries})");
+                    System.Threading.Thread.Sleep(500);
+                }
+            }
+
+            // If all retries failed, throw the error
             File.WriteAllBytes(outputPath, excelBytes);
             Console.WriteLine($"✓ Excel report saved: {outputPath}\n");
         }
@@ -166,7 +185,7 @@ namespace Eplicta.Conserver.Cli
             var fileName = Path.GetFileNameWithoutExtension(sipZipPath);
             var aipOutputPath = Path.Combine(outputPath, $"{fileName}_aip.zip");
 
-            File.WriteAllBytes(aipOutputPath, aipBytes);
+            WriteFileWithRetry(aipOutputPath, aipBytes);
             Console.WriteLine($"✓ AIP saved: {aipOutputPath}\n");
 
             return aipOutputPath;
@@ -182,10 +201,37 @@ namespace Eplicta.Conserver.Cli
 
             var outputPath = Path.GetDirectoryName(aipZipPath);
             var fileName = Path.GetFileNameWithoutExtension(aipZipPath);
+            // Remove "_aip" from filename if it exists
+            if (fileName.EndsWith("_aip"))
+            {
+                fileName = fileName.Substring(0, fileName.Length - 4);
+            }
             var dipOutputPath = Path.Combine(outputPath, $"{fileName}_dip.zip");
 
-            File.WriteAllBytes(dipOutputPath, dipBytes);
+            WriteFileWithRetry(dipOutputPath, dipBytes);
             Console.WriteLine($"✓ DIP saved: {dipOutputPath}\n");
+        }
+
+        // Helper method to write files with retry logic for handling locked files
+        private static void WriteFileWithRetry(string filePath, byte[] data)
+        {
+            int maxRetries = 3;
+            for (int i = 0; i < maxRetries; i++)
+            {
+                try
+                {
+                    File.WriteAllBytes(filePath, data);
+                    return;
+                }
+                catch (IOException) when (i < maxRetries - 1)
+                {
+                    Console.WriteLine($"  File is in use, retrying in 500ms... ({i + 1}/{maxRetries})");
+                    System.Threading.Thread.Sleep(500);
+                }
+            }
+
+            // If all retries failed, try one more time and let the exception propagate
+            File.WriteAllBytes(filePath, data);
         }
 
     }
