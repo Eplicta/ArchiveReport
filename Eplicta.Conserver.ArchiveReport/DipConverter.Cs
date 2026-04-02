@@ -204,7 +204,7 @@ public static class DipConverter
         return metadata;
     }
 
-    private static string? ExtractXmlValue(string xml, string elementName)
+    private static string ExtractXmlValue(string xml, string elementName)
     {
         var pattern = $@"<{elementName}[^>]*>([^<]+)</{elementName}>";
         var match = System.Text.RegularExpressions.Regex.Match(xml, pattern);
@@ -213,10 +213,11 @@ public static class DipConverter
 
     private class AipMetadata
     {
-        public string? Identifier { get; set; }
-        public string? Title { get; set; }
-        public string? Creator { get; set; }
-        public string? Publisher { get; set; }
-        public string? AccessCondition { get; set; }
+        public string Identifier { get; set; }
+        public string Title { get; set; }
+        public string Creator { get; set; }
+        public string Publisher { get; set; }
+        public string AccessCondition { get; set; }
     }
 }
+   
