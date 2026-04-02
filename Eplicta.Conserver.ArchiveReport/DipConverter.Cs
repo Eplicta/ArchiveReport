@@ -9,45 +9,54 @@ public static class DipConverter
         distributionId ??= Guid.NewGuid().ToString();
 
         var dipFiles = new List<(string filename, byte[] data)>();
-
+        var aipMetadata = ExtractMetadataFromAip(aipZipPath);
+        
+        // Extract only data files (from the "data" folder)
         using (var zipStream = File.OpenRead(aipZipPath))
         using (var zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read))
         {
             foreach (var entry in zipArchive.Entries)
             {
-                if (!entry.Name.Equals("aip.xml", StringComparison.OrdinalIgnoreCase) &&
-                    !entry.Name.Equals("metadata.xml", StringComparison.OrdinalIgnoreCase) &&
-                    !entry.Name.Equals("dip.xml", StringComparison.OrdinalIgnoreCase))
+                // Only include files from the data folder for distribution
+                if (entry.FullName.StartsWith("data/", StringComparison.OrdinalIgnoreCase) && !entry.FullName.EndsWith("/"))
                 {
                     using (var stream = entry.Open())
                     using (var memory = new MemoryStream())
                     {
                         stream.CopyTo(memory);
-                        dipFiles.Add((entry.Name, memory.ToArray()));
+                        // Remove "data/" prefix from filename
+                        var fileName = entry.Name;
+                        dipFiles.Add((fileName, memory.ToArray()));
                     }
                 }
             }
         }
-
-        var aipMetadata = ExtractMetadataFromAip(aipZipPath);
 
         try
         {
             using var outputStream = new MemoryStream();
             using (var zipArchive = new ZipArchive(outputStream, ZipArchiveMode.Create, leaveOpen: true))
             {
-                // Create METS metadata XML for DIP
-                var metsXml = GenerateDipMetsXml(distributionId, aipMetadata);
+                // Create DIP METS metadata (descriptive metadata for distribution)
+                var metsXml = GenerateDipMetsXml(distributionId, aipMetadata, dipFiles);
                 var metsEntry = zipArchive.CreateEntry("dip.xml");
                 using (var streamWriter = new StreamWriter(metsEntry.Open()))
                 {
                     streamWriter.Write(metsXml);
                 }
 
-                // Add all files to the distribution package
+                // Create presentation structure
+                var presentationXml = GeneratePresentationStructure(dipFiles, aipMetadata);
+                var presentationEntry = zipArchive.CreateEntry("presentation_structure.xml");
+                using (var streamWriter = new StreamWriter(presentationEntry.Open()))
+                {
+                    streamWriter.Write(presentationXml);
+                }
+
+                // Add all data files to the archive under "files" folder for presentation
                 foreach (var (filename, filedata) in dipFiles)
                 {
-                    var fileEntry = zipArchive.CreateEntry(filename);
+                    var fileEntry = zipArchive.CreateEntry($"files/{filename}");
                     using (var entryStream = fileEntry.Open())
                     {
                         entryStream.Write(filedata, 0, filedata.Length);
@@ -66,9 +75,12 @@ public static class DipConverter
         }
     }
 
-    private static string GenerateDipMetsXml(string distributionId, AipMetadata metadata)
+    private static string GenerateDipMetsXml(string distributionId, AipMetadata metadata, List<(string filename, byte[] data)> files)
     {
         var timestamp = DateTime.UtcNow.ToString("o");
+        var fileElements = string.Join("\n            ", files.Select(f => 
+            $"<file ID=\"{System.Security.SecurityElement.Escape(f.filename)}\" SIZE=\"{f.data.Length}\"><FLocat LOCTYPE=\"URL\" xlink:href=\"files/{System.Security.SecurityElement.Escape(f.filename)}\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"/></file>"));
+
         var xml = $@"<?xml version=""1.0"" encoding=""UTF-8""?>
 <mets xmlns=""http://www.loc.gov/METS/"" OBJID=""{distributionId}"">
     <metsHdr CREATEDATE=""{timestamp}"">
@@ -76,9 +88,9 @@ public static class DipConverter
             <name>{System.Security.SecurityElement.Escape(metadata.Creator ?? "Unknown Submitter")}</name>
             <note>Original submitter information</note>
         </agent>
-        <agent ROLE=""OTHER"" TYPE=""ORGANIZATION"">
+        <agent ROLE=""DISSEMINATOR"" TYPE=""ORGANIZATION"">
             <name>Eplicta Archive</name>
-            <note>This is a distribution copy for user access</note>
+            <note>This is a Dissemination Information Package (DIP) for user access and presentation</note>
         </agent>
     </metsHdr>
     <dmdSec ID=""dmd1"">
@@ -94,12 +106,40 @@ public static class DipConverter
                         <publisher>{System.Security.SecurityElement.Escape(metadata.Publisher ?? "Eplicta Archive")}</publisher>
                     </originInfo>
                     <accessCondition>{System.Security.SecurityElement.Escape(metadata.AccessCondition ?? "Open")}</accessCondition>
+                    <note type=""dissemination"">This package is optimized for user access and presentation</note>
                 </mods>
             </xmlData>
         </mdWrap>
     </dmdSec>
+    <fileSec>
+        <fileGrp USE=""dissemination data"">
+            {fileElements}
+        </fileGrp>
+    </fileSec>
 </mets>";
         return xml;
+    }
+
+    private static string GeneratePresentationStructure(List<(string filename, byte[] data)> files, AipMetadata metadata)
+    {
+        var fileList = string.Join("\n        ", files.Select(f => 
+            $"<item name=\"{System.Security.SecurityElement.Escape(f.filename)}\" size=\"{f.data.Length}\" href=\"files/{System.Security.SecurityElement.Escape(f.filename)}\"/>"));
+
+        return $@"<?xml version=""1.0"" encoding=""UTF-8""?>
+<presentation timestamp=""{DateTime.UtcNow:o}"">
+    <metadata>
+        <title>{System.Security.SecurityElement.Escape(metadata.Title ?? "Distribution Package")}</title>
+        <description>Dissemination Information Package for user access</description>
+        <creator>{System.Security.SecurityElement.Escape(metadata.Creator ?? "Unknown")}</creator>
+        <publisher>{System.Security.SecurityElement.Escape(metadata.Publisher ?? "Unknown")}</publisher>
+        <accessLevel>{System.Security.SecurityElement.Escape(metadata.AccessCondition ?? "Open")}</accessLevel>
+    </metadata>
+    <structure>
+        <files total=""{files.Count}"">
+        {fileList}
+        </files>
+    </structure>
+</presentation>";
     }
 
     private static AipMetadata ExtractMetadataFromAip(string aipZipPath)
@@ -159,12 +199,12 @@ public static class DipConverter
         }
         catch
         {
-        } 
+        }
 
         return metadata;
     }
 
-    private static string ExtractXmlValue(string xml, string elementName)
+    private static string? ExtractXmlValue(string xml, string elementName)
     {
         var pattern = $@"<{elementName}[^>]*>([^<]+)</{elementName}>";
         var match = System.Text.RegularExpressions.Regex.Match(xml, pattern);
@@ -173,10 +213,10 @@ public static class DipConverter
 
     private class AipMetadata
     {
-        public string Identifier { get; set; }
-        public string Title { get; set; }
-        public string Creator { get; set; }
-        public string Publisher { get; set; }
-        public string AccessCondition { get; set; }
+        public string? Identifier { get; set; }
+        public string? Title { get; set; }
+        public string? Creator { get; set; }
+        public string? Publisher { get; set; }
+        public string? AccessCondition { get; set; }
     }
 }
