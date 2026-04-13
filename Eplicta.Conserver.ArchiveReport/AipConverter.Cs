@@ -82,10 +82,10 @@ public static class AipConverter
                     streamWriter.Write(manifestXml);
                 }
 
-                // Add all extracted files to the archive under "data" folder
+                // Add all extracted files to the archive under "files" folder
                 foreach (var (filename, data, _) in fileData)
                 {
-                    var fileEntry = zipArchive.CreateEntry($"data/{filename}");
+                    var fileEntry = zipArchive.CreateEntry($"files/{filename}");
                     using (var entryStream = fileEntry.Open())
                     {
                         entryStream.Write(data, 0, data.Length);
@@ -135,7 +135,7 @@ public static class AipConverter
     </dmdSec>
     <fileSec>
         <fileGrp USE=""archive data"">
-            {string.Join("\n            ", fileData.Select(f => $"<file ID=\"{System.Security.SecurityElement.Escape(f.Item1)}\" CHECKSUM=\"{f.Item3}\" CHECKSUMTYPE=\"SHA256\" SIZE=\"{f.Item2.Length}\"><FLocat LOCTYPE=\"URL\" xlink:href=\"data/{System.Security.SecurityElement.Escape(f.Item1)}\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"/></file>"))}
+            {string.Join("\n            ", fileData.Select(f => $"<file path=\"file/{System.Security.SecurityElement.Escape(f.Item1)}\" size=\"{f.Item2.Length}\" checksum=\"{f.Item3}\"/>"))}
         </fileGrp>
     </fileSec>
 </mets>";

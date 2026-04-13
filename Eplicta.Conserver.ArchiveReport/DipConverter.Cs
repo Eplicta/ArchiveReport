@@ -11,14 +11,14 @@ public static class DipConverter
         var dipFiles = new List<(string filename, byte[] data)>();
         var aipMetadata = ExtractMetadataFromAip(aipZipPath);
         
-        // Extract only data files (from the "data" folder)
+        // Extract only data files (from the "files" folder)
         using (var zipStream = File.OpenRead(aipZipPath))
         using (var zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read))
         {
             foreach (var entry in zipArchive.Entries)
             {
-                // Only include files from the data folder for distribution
-                if (entry.FullName.StartsWith("data/", StringComparison.OrdinalIgnoreCase) && !entry.FullName.EndsWith("/"))
+                // Only include files from the files folder for distribution
+                if (entry.FullName.StartsWith("files/", StringComparison.OrdinalIgnoreCase) && !entry.FullName.EndsWith("/"))
                 {
                     using (var stream = entry.Open())
                     using (var memory = new MemoryStream())
