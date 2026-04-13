@@ -154,11 +154,6 @@ archive.zip → archive.xlsx
 
 ---
 
-## 📄 License
-
-Specify your license here.
-
----
 
 ## 👤 Author
 
