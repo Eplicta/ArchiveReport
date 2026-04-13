@@ -1,141 +1,167 @@
-# Eplicta.Conserver.ArchiveReport
+# Eplicta Conserver CLI
 
-A .NET library for generating Excel reports from Conserver archive deliveries.
+A command-line tool for generating structured Excel reports from archive delivery packages (ZIP files containing METS/SIP metadata).
 
-The package reads a SIP archive (ZIP), extracts metadata from the `sip.xml` METS file, scans the contained files, and produces a structured Excel report based on a predefined template.
+---
 
-## Features
+## 📦 Overview
 
-* Read **METS metadata** from `sip.xml`
-* Extract and scan **nested ZIP archives**
-* Collect file metadata such as:
+**Eplicta.Conserver.Cli** processes archive delivery ZIP files and produces an Excel report using a predefined template.
 
-  * File name
-  * File type
-  * File size
-  * Charset
-  * Media duration (if available)
-  * File path
-* Generate a **formatted Excel report**
-* Uses an embedded Excel template
+The tool:
 
-## Installation
+1. Reads metadata from `sip.xml` inside the archive
+2. Extracts and scans files (including nested ZIPs)
+3. Collects file metadata (name, size, type, duration, etc.)
+4. Outputs a formatted Excel report
 
-Install via NuGet:
+---
 
-```bash
-dotnet add package Eplicta.Conserver.ArchiveReport
-```
-
-or via Package Manager:
-
-```powershell
-Install-Package Eplicta.Conserver.ArchiveReport
-```
-
-## Basic Usage
-
-The simplest way to generate a report is to call:
-
-```csharp
-using Eplicta.Conserver.ArchiveReport;
-
-Renderer.Save("archive.zip");
-```
-
-This will:
-
-1. Read the archive
-2. Extract metadata from `sip.xml`
-3. Scan all files in the archive
-4. Generate an Excel report
-5. Save it next to the ZIP file
-
-Example output:
+## 🧱 Project Structure
 
 ```
-archive.zip
-archive.xlsx
+Eplicta.Conserver.Cli
+│
+├── Eplicta.Conserver.ArchiveReport
+│   ├── ArchiveReport.cs
+│   ├── FileEntry.cs
+│   ├── FileScanner.cs
+│   ├── MetsLoader.cs
+│   ├── Renderer.cs
+│   └── Templates/
+│       └── mall_webb_2026.xlsx
+│
+└── Eplicta.Conserver.Cli
+    └── Program.cs
 ```
 
-## Generate Report as Bytes
+---
 
-If you want to handle the Excel file yourself (for example in a web API), you can retrieve the report as a byte array.
+## ⚙️ How It Works
 
-```csharp
-using Eplicta.Conserver.ArchiveReport;
+### 1. Metadata Extraction
 
-var bytes = Renderer.GetBytes("archive.zip");
+The system reads `sip.xml` inside the ZIP archive and extracts metadata such as:
 
-File.WriteAllBytes("report.xlsx", bytes);
-```
-
-## How It Works
-
-### 1. Read Archive Metadata
-
-The package reads `sip.xml` inside the ZIP archive and extracts metadata such as:
-
+* Description
 * Archive creator
 * System name
-* Description
-* Extraction date
-* Comments
+* Withdrawal date
 
-### 2. Scan Files
+(See: )
 
-The archive is extracted and scanned to collect file metadata including:
+---
 
-* File name
-* Extension
-* File size
-* Duration for media files (if available)
+### 2. File Scanning
 
-### 3. Generate Excel Report
+The tool:
 
-An Excel report is generated using a built-in template.
+* Extracts nested ZIP files
+* Scans all files recursively
+* Collects metadata like file size and duration
 
-The report contains two sheets:
+(See: )
 
-**Allmänt**
+---
 
-* Archive metadata
-* Contact information
-* System information
+### 3. Data Model
 
-**Filer**
+The report is built using structured models:
 
-* File name
-* File type
-* Size
-* Duration
-* Path
-* Security classification
-* Comments
+* `ArchiveReport` → overall archive metadata 
+* `FileEntry` → per-file metadata 
 
-## Example Workflow
+---
 
-```csharp
-using Eplicta.Conserver.ArchiveReport;
+### 4. Excel Generation
 
-string zipPath = @"C:\archives\delivery.zip";
+An embedded Excel template is populated using EPPlus:
 
-// Generate report
-Renderer.Save(zipPath);
+* Sheet **"Allmänt"** → archive metadata
+* Sheet **"Filer"** → file list
+
+(See: )
+
+---
+
+## 🚀 Usage
+
+### Basic
+
+```bash
+dotnet run -- <path-to-zip>
 ```
 
-Result:
+Example:
+
+```bash
+dotnet run -- archive.zip
+```
+
+---
+
+### With Optional Parameters
+
+You can override metadata from the command line:
+
+```bash
+dotnet run -- archive.zip \
+  --description="My archive" \
+  --creator="Company AB" \
+  --systemname="System X" \
+  --system="Internal System" \
+  --withdrawaldate="2025-01-01" \
+  --comment="Generated manually"
+```
+
+---
+
+## 📝 Output
+
+The tool generates an Excel file next to the input ZIP:
 
 ```
-delivery.exe
+archive.zip → archive.xlsx
 ```
 
-## Requirements
+---
 
-* .NET 6 or later
-* EPPlus
-* TagLib#
+## 🔧 Requirements
 
-## Error Handling
+* .NET (compatible with your project target framework)
+* EPPlus (for Excel handling)
+* TagLib# (for media duration extraction)
 
-If file scanning fails, the error message will be appended to the report comments so that the process can continue.
+---
+
+## ⚠️ Notes
+
+* The tool expects a `sip.xml` file inside the archive
+* Nested ZIP files are automatically extracted
+* Unsupported media files are ignored when reading duration
+* EPPlus is configured for **non-commercial personal use**
+
+(See: )
+
+---
+
+## 📌 Future Improvements
+
+* Support multiple ZIP inputs
+* Better error handling and logging
+* Configurable output path
+* Validation of METS structure
+
+---
+
+## 📄 License
+
+Specify your license here.
+
+---
+
+## 👤 Author
+
+Eplicta Conserver Team
+
+---
