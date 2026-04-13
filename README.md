@@ -145,15 +145,6 @@ archive.zip → archive.xlsx
 
 ---
 
-## 📌 Future Improvements
-
-* Support multiple ZIP inputs
-* Better error handling and logging
-* Configurable output path
-* Validation of METS structure
-
----
-
 
 ## 👤 Author
 
