@@ -4,7 +4,7 @@ A command-line tool for generating structured Excel reports from archive deliver
 
 ---
 
-## 📦 Overview
+## Overview
 
 **Eplicta.Conserver.Cli** processes archive delivery ZIP files and produces an Excel report using a predefined template.
 
@@ -17,7 +17,7 @@ The tool:
 
 ---
 
-## 🧱 Project Structure
+## Project Structure
 
 ```
 Eplicta.Conserver.Cli
@@ -37,7 +37,7 @@ Eplicta.Conserver.Cli
 
 ---
 
-## ⚙️ How It Works
+## How It Works
 
 ### 1. Metadata Extraction
 
@@ -48,8 +48,6 @@ The system reads `sip.xml` inside the ZIP archive and extracts metadata such as:
 * System name
 * Withdrawal date
 
-(See: )
-
 ---
 
 ### 2. File Scanning
@@ -59,8 +57,6 @@ The tool:
 * Extracts nested ZIP files
 * Scans all files recursively
 * Collects metadata like file size and duration
-
-(See: )
 
 ---
 
@@ -84,7 +80,7 @@ An embedded Excel template is populated using EPPlus:
 
 ---
 
-## 🚀 Usage
+## Usage
 
 ### Basic
 
@@ -116,7 +112,7 @@ dotnet run -- archive.zip \
 
 ---
 
-## 📝 Output
+## Output
 
 The tool generates an Excel file next to the input ZIP:
 
@@ -126,7 +122,7 @@ archive.zip → archive.xlsx
 
 ---
 
-## 🔧 Requirements
+## Requirements
 
 * .NET (compatible with your project target framework)
 * EPPlus (for Excel handling)
@@ -134,20 +130,19 @@ archive.zip → archive.xlsx
 
 ---
 
-## ⚠️ Notes
+## Notes
 
 * The tool expects a `sip.xml` file inside the archive
 * Nested ZIP files are automatically extracted
 * Unsupported media files are ignored when reading duration
 * EPPlus is configured for **non-commercial personal use**
-
-(See: )
+* Follows riksarkivets E-ARK requirements
 
 ---
 
 
-## 👤 Author
+## Author
 
-Eplicta Conserver Team
+Eplicta ArchiveReport Team
 
 ---
