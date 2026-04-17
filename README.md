@@ -76,8 +76,6 @@ An embedded Excel template is populated using EPPlus:
 * Sheet **"Allmänt"** → archive metadata
 * Sheet **"Filer"** → file list
 
-(See: )
-
 ---
 
 ## Usage
