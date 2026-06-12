@@ -1,90 +1,76 @@
-﻿using System;
-using System.IO;
 using System.Reflection;
-using OfficeOpenXml;
+using ClosedXML.Excel;
 
-namespace Eplicta.Conserver.ArchiveReport
+namespace Eplicta.Conserver.ArchiveReport;
+
+public class Renderer
 {
-    // Manages the conversion of MetsData to Excel
-    public record Renderer
+    private const string TemplateResourceName = "Eplicta.Conserver.ArchiveReport.Templates.mall_webb_2026.xlsx";
+    private const string GeneralSheetName = "Allmänt";
+    private const string FilesSheetName = "Filer";
+    private const string DurationFormat = @"hh\:mm\:ss";
+    private const int FirstFileRow = 2;
+
+    public byte[] GetBytes(ArchiveReport report)
     {
-        // Runs the entire process and returns the Excel file as a byte array
-        public byte[] GetBytes(ArchiveReport mets)
+        var assembly = Assembly.GetExecutingAssembly();
+        using var templateStream = assembly.GetManifestResourceStream(TemplateResourceName) ?? throw new InvalidOperationException($"Could not find the embedded Excel template '{TemplateResourceName}'.");
+        using var workbook = new XLWorkbook(templateStream);
+
+        if (!workbook.TryGetWorksheet(GeneralSheetName, out var generalSheet)) throw new InvalidOperationException($"Could not find the worksheet '{GeneralSheetName}'.");
+        if (!workbook.TryGetWorksheet(FilesSheetName, out var filesSheet)) throw new InvalidOperationException($"Could not find the worksheet '{FilesSheetName}'.");
+
+        FillGeneralSheet(generalSheet, report);
+        FillFilesSheet(filesSheet, report);
+
+        using var stream = new MemoryStream();
+        workbook.SaveAs(stream);
+        return stream.ToArray();
+    }
+
+    public void Save(ArchiveReport report, string outputPath)
+    {
+        File.WriteAllBytes(outputPath, GetBytes(report));
+    }
+
+    private static void FillGeneralSheet(IXLWorksheet sheet, ArchiveReport report)
+    {
+        sheet.Cell("B4").Value = report.Description;
+        sheet.Cell("B5").Value = report.ArchiveBuilder;
+        sheet.Cell("B6").Value = report.OrganizationNumberArchiveBuilder;
+        sheet.Cell("B7").Value = report.DeliveringOrganization;
+        sheet.Cell("B8").Value = report.DeliveringOrganizationNumber;
+        sheet.Cell("B9").Value = report.System;
+        sheet.Cell("B10").Value = report.ContactPerson;
+        sheet.Cell("B11").Value = report.Telephone;
+        sheet.Cell("B12").Value = report.Email;
+        sheet.Cell("B13").Value = report.CostPlace;
+        sheet.Cell("B14").Value = report.InvoiceContact;
+        sheet.Cell("B15").Value = report.ArchiveName;
+        sheet.Cell("B16").Value = report.SystemName;
+        sheet.Cell("B17").Value = report.WithdrawalDate;
+        sheet.Cell("B18").Value = report.Comment;
+        sheet.Cell("B19").Value = report.ProjectCode;
+        sheet.Cell("B20").Value = report.AccessionsId;
+        sheet.Cell("B21").Value = report.BatchId;
+    }
+
+    private static void FillFilesSheet(IXLWorksheet sheet, ArchiveReport report)
+    {
+        var row = FirstFileRow;
+        foreach (var file in report.Files)
         {
-
-            // Fetches the assembly
-            var assembly = Assembly.GetExecutingAssembly();
-
-            // Fetches the embedded Excel template as a stream
-            using var templateStream =
-            assembly.GetManifestResourceStream("Eplicta.Conserver.ArchiveReport.Templates.mall_webb_2026.xlsx")
-                ?? throw new Exception("Kunde inte hitta den inbäddade Excel-mallen.");
-
-            // Opens the excel template using EPPlus
-            using var package = new ExcelPackage(templateStream);
-
-            var allmantSheet = package.Workbook.Worksheets["Allmänt"]
-                ?? throw new Exception("Kunde inte hitta bladet 'Allmänt'.");
-
-            var filerSheet = package.Workbook.Worksheets["Filer"]
-                ?? throw new Exception("Kunde inte hitta bladet 'Filer'.");
-
-            // Fills in the metadata in the "Allmänt sheet
-            allmantSheet.Cells["B4"].Value = mets.Description;
-            allmantSheet.Cells["B5"].Value = mets.ArchiveBuilder;
-            allmantSheet.Cells["B6"].Value = mets.OrganizationNumberArchiveBuilder;
-            allmantSheet.Cells["B7"].Value = mets.DeliveringOrganization;
-            allmantSheet.Cells["B8"].Value = mets.DeliveringOrganizationNumber;
-            allmantSheet.Cells["B9"].Value = mets.System;
-            allmantSheet.Cells["B10"].Value = mets.ContactPerson;
-            allmantSheet.Cells["B11"].Value = mets.Telephone;
-            allmantSheet.Cells["B12"].Value = mets.Email;
-            allmantSheet.Cells["B13"].Value = mets.CostPlace;
-            allmantSheet.Cells["B14"].Value = mets.InvoiceContact;
-            allmantSheet.Cells["B15"].Value = mets.ArchiveName;
-            allmantSheet.Cells["B16"].Value = mets.SystemName;
-            allmantSheet.Cells["B17"].Value = mets.WithdrawalDate;
-            allmantSheet.Cells["B18"].Value = mets.Comment;
-            allmantSheet.Cells["B19"].Value = mets.ProjectCode;
-            allmantSheet.Cells["B20"].Value = mets.AccessionsId;
-            allmantSheet.Cells["B21"].Value = mets.BatchId;
-
-            // Fills in the files in the "Filer" sheet, starting from row 2 (row 1 has headers)
-            if (mets.Files != null && mets.Files.Count > 0)
-            {
-                int row = 2;
-
-                foreach (var f in mets.Files)
-                {
-                    filerSheet.Cells[row, 1].Value = f.FileName;
-                    filerSheet.Cells[row, 2].Value = f.FileType;
-                    filerSheet.Cells[row, 3].Value = f.FileTypeVersion;
-                    filerSheet.Cells[row, 4].Value = f.SizeBytes;
-                    filerSheet.Cells[row, 5].Value = f.Charset;
-                    filerSheet.Cells[row, 6].Value =
-                        f.Duration.HasValue ? f.Duration.Value.ToString(@"hh\:mm\:ss") : "";
-                    filerSheet.Cells[row, 7].Value = f.Path;
-                    filerSheet.Cells[row, 8].Value = f.Secrecy;
-                    filerSheet.Cells[row, 9].Value = f.PersonalDataHandling;
-                    filerSheet.Cells[row, 10].Value = f.Comment;
-
-                    row++;
-                }
-            }
-
-            // Return excel as byte array
-            return package.GetAsByteArray();
-        }
-
-        // Saves excel file 
-        public void Save(ArchiveReport mets, string outputPath)
-        {
-            var excelBytes = GetBytes(mets);
-
-            File.WriteAllBytes(outputPath, excelBytes);
-
-            Console.WriteLine("Excel created:");
-            Console.WriteLine(outputPath);
+            sheet.Cell(row, 1).Value = file.FileName;
+            sheet.Cell(row, 2).Value = file.FileType;
+            sheet.Cell(row, 3).Value = file.FileTypeVersion;
+            sheet.Cell(row, 4).Value = file.SizeBytes;
+            sheet.Cell(row, 5).Value = file.Charset;
+            sheet.Cell(row, 6).Value = file.Duration.HasValue ? file.Duration.Value.ToString(DurationFormat) : "";
+            sheet.Cell(row, 7).Value = file.Path;
+            sheet.Cell(row, 8).Value = file.Secrecy;
+            sheet.Cell(row, 9).Value = file.PersonalDataHandling;
+            sheet.Cell(row, 10).Value = file.Comment;
+            row++;
         }
     }
 }
