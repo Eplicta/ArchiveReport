@@ -1,12 +1,13 @@
 using System.IO.Compression;
 using System.Xml.Linq;
 using Eplicta.Conserver.ArchiveReport;
+using ArchiveReportData = Eplicta.Conserver.ArchiveReport.ArchiveReport;
 
 namespace Eplicta.Conserver.Cli;
 
 public class MetsLoader
 {
-    public ArchiveReport Read(string zipPath, string setDescription = null, string setArchiveCreator = null, string setSystemName = null, string setSystem = null, string setWithdrawalDate = null, string setComment = null)
+    public ArchiveReportData Read(string zipPath, string setDescription = null, string setArchiveCreator = null, string setSystemName = null, string setSystem = null, string setWithdrawalDate = null, string setComment = null)
     {
         using var archive = ZipFile.OpenRead(zipPath);
 
@@ -54,7 +55,7 @@ public class MetsLoader
         if (!string.IsNullOrEmpty(setSystem)) system = setSystem;
         if (!string.IsNullOrEmpty(setWithdrawalDate)) withdrawalDate = setWithdrawalDate;
 
-        return new ArchiveReport
+        return new ArchiveReportData
         {
             Files = files,
             Description = description,
