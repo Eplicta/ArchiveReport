@@ -67,6 +67,44 @@ public class RendererTests
         Assert.Equal("00:01:30", sheet.Cell(3, 6).GetString());
     }
 
+    [Fact]
+    public void GetBytes_preserves_template_header_labels()
+    {
+        var bytes = new Renderer().GetBytes(new ArchiveReport());
+
+        using var workbook = OpenWorkbook(bytes);
+        Assert.Equal("Beskrivning av leveransen", workbook.Worksheet(GeneralSheetName).Cell("A4").GetString());
+        Assert.Equal("FILNAMN", workbook.Worksheet(FilesSheetName).Cell("A1").GetString());
+    }
+
+    [Fact]
+    public void GetBytes_clears_template_example_file_rows_below_the_written_files()
+    {
+        var report = new ArchiveReport
+        {
+            Files = [new FileEntry { FileName = "only.html" }]
+        };
+
+        var bytes = new Renderer().GetBytes(report);
+
+        using var workbook = OpenWorkbook(bytes);
+        var sheet = workbook.Worksheet(FilesSheetName);
+        Assert.Equal("only.html", sheet.Cell(2, 1).GetString());
+        Assert.Equal("", sheet.Cell(3, 1).GetString());
+        Assert.Equal("", sheet.Cell(50, 1).GetString());
+    }
+
+    [Fact]
+    public void GetBytes_clears_template_example_metadata_not_written_by_the_report()
+    {
+        var bytes = new Renderer().GetBytes(new ArchiveReport());
+
+        using var workbook = OpenWorkbook(bytes);
+        var sheet = workbook.Worksheet(GeneralSheetName);
+        Assert.Equal("", sheet.Cell("B2").GetString());
+        Assert.Equal("", sheet.Cell("B3").GetString());
+    }
+
     private static XLWorkbook OpenWorkbook(byte[] bytes)
     {
         var stream = new MemoryStream(bytes);

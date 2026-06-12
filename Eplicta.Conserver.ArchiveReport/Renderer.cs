@@ -10,6 +10,8 @@ public class Renderer
     private const string FilesSheetName = "Filer";
     private const string DurationFormat = @"hh\:mm\:ss";
     private const int FirstFileRow = 2;
+    private const int FileColumnCount = 10;
+    private const string GeneralValueRange = "B2:B21";
 
     public byte[] GetBytes(ArchiveReport report)
     {
@@ -35,6 +37,7 @@ public class Renderer
 
     private static void FillGeneralSheet(IXLWorksheet sheet, ArchiveReport report)
     {
+        sheet.Range(GeneralValueRange).Clear(XLClearOptions.Contents);
         sheet.Cell("B4").Value = report.Description;
         sheet.Cell("B5").Value = report.ArchiveBuilder;
         sheet.Cell("B6").Value = report.OrganizationNumberArchiveBuilder;
@@ -57,6 +60,8 @@ public class Renderer
 
     private static void FillFilesSheet(IXLWorksheet sheet, ArchiveReport report)
     {
+        ClearDataRows(sheet);
+
         var row = FirstFileRow;
         foreach (var file in report.Files)
         {
@@ -72,5 +77,13 @@ public class Renderer
             sheet.Cell(row, 10).Value = file.Comment;
             row++;
         }
+    }
+
+    private static void ClearDataRows(IXLWorksheet sheet)
+    {
+        var lastRow = sheet.LastRowUsed()?.RowNumber() ?? 0;
+        if (lastRow < FirstFileRow) return;
+        var lastColumn = Math.Max(sheet.LastColumnUsed()?.ColumnNumber() ?? FileColumnCount, FileColumnCount);
+        sheet.Range(FirstFileRow, 1, lastRow, lastColumn).Clear(XLClearOptions.Contents);
     }
 }
