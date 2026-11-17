@@ -48,6 +48,16 @@ The CLI expects a `sip.xml` inside the archive and a nested content zip. Media d
 
 ---
 
+## Releasing
+
+Every merge to `master` builds, tests and publishes `Eplicta.ArchiveReport` to nuget.org, and creates a GitHub release `v<version>`. The version is `<major>.<minor>` from `version.txt` followed by the workflow run number, so each merge gets a new patch version. Change `version.txt` to start a new minor or major line. A specific version can be published from the Actions tab with **Publish → Run workflow**.
+
+## License
+
+MIT, see [LICENSE](LICENSE).
+
+---
+
 ## Author
 
 Eplicta ArchiveReport Team
