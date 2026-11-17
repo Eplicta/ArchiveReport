@@ -21,6 +21,7 @@
 
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>icon.png</PackageIcon>
 
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
@@ -29,6 +30,7 @@
 	<ItemGroup>
 		<EmbeddedResource Include="Templates\mall_webb_2026.xlsx" />
 		<None Include="..\README.md" Pack="true" PackagePath="\" />
+		<None Include="icon.png" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
 	<ItemGroup>
